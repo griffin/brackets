@@ -1,9 +1,17 @@
 package env
 
+import (
+	"github.com/go-redis/redis"
+)
+
+type sessionDatastore interface {
+}
+
 type session_tokens struct {
-	id        int
-	selector  string
+	Selectable
+
+	id        uint
 	validator string
-	userId    int
+	userID    uint
 	exp       int64
 }

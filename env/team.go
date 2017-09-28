@@ -4,22 +4,42 @@ import (
 	"time"
 )
 
-type Team struct {
-	teamId  uint
-	Name    string
-	Players map[string]string
+type Rank int
+
+const (
+	Owner Rank = iota
+	Moderator
+	Member
+)
+
+type teamDatastore interface {
+	CreateTeam(team Team) (*Team, error)
+	GetTeam(selector string) (*Team, error)
+	UpdateTeam(team Team) error
+	DeleteTeam(selector string) error
 }
 
-type joined struct {
-	userId uint
-	teamId uint
-	rank   string
+type Team struct {
+	Selectable
+
+	id           uint
+	tournamentID uint
+
+	Name    string
+	Players map[string]*Player
+}
+
+type Player struct {
+	*User
+	Rank
 }
 
 type Post struct {
-	Id     uint
+	Selectable
+
+	id     uint
 	Title  string
-	Author *Player
+	Author *User
 	Path   string
 	Posted time.Time
 }

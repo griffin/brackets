@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/lib/pq" // Postgres driver
 )
@@ -14,34 +15,35 @@ type db struct {
 }
 
 type Env struct {
-	db  datastore
-	log *log.Logger
+	Db  datastore
+	Log *log.Logger
 }
 
 type datastore interface {
-	players
+	userDatastore
+	sessionDatastore
+	teamDatastore
+	tournamentDatastore
+	gameDatastore
+}
+
+type Selectable struct {
+	selector string
+}
+
+func (s Selectable) Selector() string {
+	return s.selector
 }
 
 func New() *Env {
-	/*logger := log.New(os.Stdout, "log: ", log.Lshortfile)
-
-	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
-	sql, err := sql.Open("postgres", "")
-	if err != nil {
-		loggerDb.Fatal(err)
-	}
-
-	loggerDb.Printf("Connected to database")
-	a := &db{sql, loggerDb}*/
-	v := Env{nil, nil}
-	return &v //&Env{a, logger}
+	logger := log.New(os.Stdout, "log: ", log.Lshortfile)
+	return &Env{nil, logger}
 }
 
-func DbString(database, server, username, password string) string {
-	return fmt.Sprintf("postgres://%v:%v@%v/%v", username, password, server, database)
+func DbString(database, host, username, password string) string {
+	return fmt.Sprintf("postgres://%v:%v@%v/%v", username, password, host, database)
 }
 
-/*
 func (env *Env) ConnectDb(dbString string) {
 	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
 	sql, err := sql.Open("postgres", dbString)
@@ -50,6 +52,5 @@ func (env *Env) ConnectDb(dbString string) {
 	}
 
 	loggerDb.Printf("Connected to database")
-	env.db = &db{sql, loggerDb}
+	env.Db = &db{sql, loggerDb}
 }
-*/

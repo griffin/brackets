@@ -1,18 +1,32 @@
 package main
 
 import (
-	"github.com/ggpd/teambuilder/env"
+	"github.com/ggpd/brackets/env"
 	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 func main() {
 	router := gin.Default()
-	env := env.New()
-	env.ConnectDb("")
+	e := env.New()
 
-	env.GetPlayers(1)
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil {
+		e.Log.Fatalf("Error reading config file: %s \n", err)
+	}
 
-	env.Logger.Printf("Server starting...")
-	env.Logger.Fatal(autotls.Run(router, "team.oakley.ninja"))
+	url := viper.GetString("app.url")
+
+	user := viper.GetString("database.username")
+	pass := viper.GetString("database.password")
+	database := viper.GetString("database.name")
+	host := viper.GetString("database.host")
+
+	e.ConnectDb(env.DbString(database, host, user, pass))
+
+	e.Log.Printf("Server starting...")
+	e.Log.Fatal(autotls.Run(router, url))
 }
