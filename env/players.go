@@ -1,14 +1,25 @@
 package env
 
 type Player struct {
-	Id int
+	userId    int
+	Email     string
+	FirstName string
+	LastName  string
+	validator string
 }
 
-type playersDatastore interface {
+type forgot_tokens struct {
+	id        int
+	userId    int
+	validator string
+	exp       int64
+}
+
+type players interface {
 	GetPlayer(int) *Player
 }
 
-func (db *Db) GetPlayer(id int) *Player {
-	db.sql.Ping()
+func (db *db) GetPlayer(id int) *Player {
+	db.Ping()
 	return &Player{id}
 }

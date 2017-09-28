@@ -2,32 +2,54 @@ package env
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/lib/pq" // Postgres driver
 )
 
-type Db struct {
-	User     string
-	Password string
-	Database string
-	sql      *sql.DB
+type db struct {
+	*sql.DB
+	*log.Logger
 }
 
 type Env struct {
-	Db     *Datastore
-	logger log.Logger
+	db  datastore
+	log *log.Logger
 }
 
-type Datastore interface {
-	playersDatastore
+type datastore interface {
+	players
 }
 
-func (db *Db) Init() {
-	sql, err := sql.Open("postgres", "user=pqgotest dbname=pqgotest sslmode=verify-full")
+func New() *Env {
+	/*logger := log.New(os.Stdout, "log: ", log.Lshortfile)
+
+	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
+	sql, err := sql.Open("postgres", "")
 	if err != nil {
-		log.Fatal(err)
+		loggerDb.Fatal(err)
 	}
 
-	db.sql = sql
+	loggerDb.Printf("Connected to database")
+	a := &db{sql, loggerDb}*/
+	v := Env{nil, nil}
+	return &v //&Env{a, logger}
 }
+
+func DbString(database, server, username, password string) string {
+	return fmt.Sprintf("postgres://%v:%v@%v/%v", username, password, server, database)
+}
+
+/*
+func (env *Env) ConnectDb(dbString string) {
+	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
+	sql, err := sql.Open("postgres", dbString)
+	if err != nil {
+		loggerDb.Fatal(err)
+	}
+
+	loggerDb.Printf("Connected to database")
+	env.db = &db{sql, loggerDb}
+}
+*/
