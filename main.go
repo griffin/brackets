@@ -27,6 +27,30 @@ func main() {
 
 	e.ConnectDb(env.DbString(database, host, user, pass))
 
+	router.GET("/", nil)
+
+	router.GET("/tournament/:selector", nil)
+	router.PUT("/tournament/:selector", nil)
+	router.DELETE("/tournament/:selector", nil)
+	router.POST("/tournament", nil)
+
+	router.GET("/team/:selector", nil)
+	router.PUT("/team/:selector", nil)
+	router.DELETE("/team/:selector", nil)
+	router.POST("/team", nil)
+
+	router.GET("/user/:selector", nil)
+	router.PUT("/user/:selector", nil)
+	router.DELETE("/user/:selector", nil)
+	router.POST("/user", nil)
+
+	router.GET("/post/:selector", nil)
+	router.PUT("/post/:selector", nil)
+	router.DELETE("/post/:selector", nil)
+	router.POST("/post", nil)
+
+	router.POST("/session", nil)
+
 	e.Log.Printf("Server starting...")
 	e.Log.Fatal(autotls.Run(router, url))
 }
