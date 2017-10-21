@@ -18,7 +18,7 @@ func main() {
 		e.Log.Fatalf("Error reading config file: %s \n", err)
 	}
 
-	url := viper.GetString("app.url")
+	//url := viper.GetString("app.url")
 
 	user := viper.GetString("database.username")
 	pass := viper.GetString("database.password")
@@ -52,5 +52,5 @@ func main() {
 	router.POST("/session", nil)
 
 	e.Log.Printf("Server starting...")
-	e.Log.Fatal(autotls.Run(router, url))
+	e.Log.Fatal(autotls.Run(router, "127.0.0.1:4443"))
 }

@@ -1,17 +1,37 @@
 package env
 
 import (
-	"github.com/go-redis/redis"
+	_ "github.com/go-redis/redis"
+	"strings"
+)
+
+const (
+	selectSession = ""
 )
 
 type sessionDatastore interface {
 }
 
-type session_tokens struct {
-	Selectable
+func (d *db) CheckSession(token string) error {
+	split := strings.Split(token, ":")
+	selector := split[0]
+	var selQ string
+	validator := split[1]
+	var valQ string
 
-	id        uint
-	validator string
-	userID    uint
-	exp       int64
+	//TODO redis check
+
+	err := d.QueryRow(selectSession).Scan(&selQ, &valQ)
+	if err != nil {
+
+	}
+
+	if selector != selQ || validator != valQ {
+		return nil //TODO error
+	}
+
+	//TODO redis cache
+
+	return nil
+
 }

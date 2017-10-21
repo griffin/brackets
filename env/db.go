@@ -46,11 +46,11 @@ func DbString(database, host, username, password string) string {
 
 func (env *Env) ConnectDb(dbString string) {
 	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
-	sql, err := sql.Open("postgres", dbString)
+	_, err := sql.Open("postgres", dbString)
 	if err != nil {
 		loggerDb.Fatal(err)
 	}
 
 	loggerDb.Printf("Connected to database")
-	env.Db = &db{sql, loggerDb}
+	//env.Db = &db{sql, loggerDb}
 }
