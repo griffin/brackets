@@ -2,9 +2,16 @@ package main
 
 import (
 	"github.com/ggpd/brackets/env"
+	"github.com/ggpd/brackets/routes"
+
+	"github.com/go-redis/redis"
+
 	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
+
 	"github.com/spf13/viper"
+
+	"fmt"
 )
 
 func main() {
@@ -18,16 +25,42 @@ func main() {
 		e.Log.Fatalf("Error reading config file: %s \n", err)
 	}
 
-	//url := viper.GetString("app.url")
+	url := viper.GetString("app.url")
+	port := viper.GetInt("app.port")
 
-	user := viper.GetString("database.username")
-	pass := viper.GetString("database.password")
-	database := viper.GetString("database.name")
-	host := viper.GetString("database.host")
+	userSql := viper.GetString("sql.username")
+	passSql := viper.GetString("sql.password")
+	databaseSql := viper.GetString("sql.database")
+	hostSql := viper.GetString("sql.host")
+	portSql := viper.GetInt("sql.port")
 
-	e.ConnectDb(env.DbString(database, host, user, pass))
+	passRedis := viper.GetString("redis.password")
+	hostRedis := viper.GetString("redis.host")
+
+
+	sqlOptions := env.SqlOptions {
+		User: userSql,
+		Password: passSql,
+		Host: hostSql,
+		Port: portSql,
+		Database: databaseSql,
+	}
+
+
+	redisOptions := redis.Options{
+		Addr: hostRedis,
+		Password: passRedis,
+		DB: 0,
+	}
+
+
+	e.ConnectDb(sqlOptions, redisOptions)
 
 	router.GET("/", nil)
+
+	router.GET("/login", e.getLoginRoute)
+	router.POST("/login", nil)
+	router.POST("/logout", nil)
 
 	router.GET("/tournament/:selector", nil)
 	router.PUT("/tournament/:selector", nil)
@@ -52,5 +85,5 @@ func main() {
 	router.POST("/session", nil)
 
 	e.Log.Printf("Server starting...")
-	e.Log.Fatal(autotls.Run(router, "127.0.0.1:4443"))
+	e.Log.Fatal(autotls.Run(router, fmt.Sprintf("%v:%v", url, port)))
 }
