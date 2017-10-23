@@ -1,5 +1,13 @@
 package env
 
+const (
+	createTournament = "INSERT INTO tournaments (selector, name) VALUES ()"
+	getTournament = ""
+	updateTournament = ""
+	deleteTournament = ""
+)
+
+
 type tournamentDatastore interface {
 	CreateTournament(tournament Tournament) (*Tournament, error)
 	GetTournament(selector string) (*Tournament, error)
@@ -22,6 +30,8 @@ type Organizer struct {
 	Rank
 }
 
+// CreateTournament creates a new tournament using the struct provided
+// and returns a pointer to a new struct
 func (d *db) CreateTournament(tournament Tournament) (*Tournament, error) {
 	return nil, nil
 }
@@ -35,5 +45,17 @@ func (d *db) UpdateTournament(tournament Tournament) error {
 }
 
 func (d *db) DeleteTournament(selector string) error {
+	return nil
+}
+
+func (d *db) GetOrganizer(selector string) (*Organizer, error) {
+	return nil, nil
+}
+
+func (d *db) UpdateOrganizer(selector string) (*Organizer, error) {
+	return nil, nil
+}
+
+func (d *db) DeleteOrganizer(selector string) error {
 	return nil
 }

@@ -40,7 +40,7 @@ func (d *db) GetPost(selector string) (*Post, error) {
 	return nil, nil
 }
 
-func (d *db) GetPosts(selector string) ([]*Post, error){
+func (d *db) GetPosts(teamSelector string) ([]*Post, error){
 	return nil, nil
 }
 

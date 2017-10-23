@@ -4,7 +4,6 @@ import (
 	"github.com/ggpd/brackets/env"
 	"github.com/ggpd/brackets/routes"
 
-	"github.com/go-redis/redis"
 
 	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
@@ -16,7 +15,7 @@ import (
 
 func main() {
 	router := gin.Default()
-	e := env.New()
+	e := routes.CastEnv(env.New())
 
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
@@ -28,39 +27,41 @@ func main() {
 	url := viper.GetString("app.url")
 	port := viper.GetInt("app.port")
 
-	userSql := viper.GetString("sql.username")
-	passSql := viper.GetString("sql.password")
-	databaseSql := viper.GetString("sql.database")
-	hostSql := viper.GetString("sql.host")
-	portSql := viper.GetInt("sql.port")
+	userSQL := viper.GetString("sql.username")
+	passSQL := viper.GetString("sql.password")
+	databaseSQL := viper.GetString("sql.database")
+	hostSQL := viper.GetString("sql.host")
+	portSQL := viper.GetInt("sql.port")
 
 	passRedis := viper.GetString("redis.password")
 	hostRedis := viper.GetString("redis.host")
+	portRedis := viper.GetInt("redis.port")
 
 
-	sqlOptions := env.SqlOptions {
-		User: userSql,
-		Password: passSql,
-		Host: hostSql,
-		Port: portSql,
-		Database: databaseSql,
+	sqlOptions := env.SQLOptions {
+		User: userSQL,
+		Password: passSQL,
+		Host: hostSQL,
+		Port: portSQL,
+		Database: databaseSQL,
 	}
 
 
-	redisOptions := redis.Options{
-		Addr: hostRedis,
+	redisOptions := env.RedisOptions{
+		Host: hostRedis,
+		Port: portRedis,
 		Password: passRedis,
-		DB: 0,
 	}
 
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
-	router.GET("/", nil)
+	router.GET("/", e.GetHomeRoute)
 
-	router.GET("/login", e.getLoginRoute)
+	router.GET("/login", e.GetLoginRoute)
 	router.POST("/login", nil)
 	router.POST("/logout", nil)
+	router.GET("/register", nil)
 
 	router.GET("/tournament/:selector", nil)
 	router.PUT("/tournament/:selector", nil)
@@ -72,17 +73,16 @@ func main() {
 	router.DELETE("/team/:selector", nil)
 	router.POST("/team", nil)
 
+	router.GET("/team/:selector/posts", nil)
+	router.GET("/team/:teamselector/post/:postselector", nil)
+	router.PUT("/team/:selector/post", nil)
+	router.DELETE("/team/:teamselector/post/:postselector", nil)
+	router.POST("/team/:teamselector/post/:postselector", nil)
+
 	router.GET("/user/:selector", nil)
 	router.PUT("/user/:selector", nil)
 	router.DELETE("/user/:selector", nil)
 	router.POST("/user", nil)
-
-	router.GET("/post/:selector", nil)
-	router.PUT("/post/:selector", nil)
-	router.DELETE("/post/:selector", nil)
-	router.POST("/post", nil)
-
-	router.POST("/session", nil)
 
 	e.Log.Printf("Server starting...")
 	e.Log.Fatal(autotls.Run(router, fmt.Sprintf("%v:%v", url, port)))
