@@ -17,6 +17,9 @@ type db struct {
 	*sql.DB
 	*log.Logger
 	*redis.Client
+
+	randLk  *sync.Mutex
+	rand *rand.Rand
 }
 
 type datastore interface {
@@ -69,12 +72,12 @@ const (
 
 // GenerateSelector generates a selector of length n using the env's random
 // Safe for concurrent use.
-func (env *Env) GenerateSelector(n int) string {
+func (d *db) GenerateSelector(n int) string {
     b := make([]byte, n)
     // A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
-    for i, cache, remain := n-1, env.randInt63(), letterIdxMax; i >= 0; {
+    for i, cache, remain := n-1, d.randInt63(), letterIdxMax; i >= 0; {
         if remain == 0 {
-            cache, remain = env.randInt63(), letterIdxMax
+            cache, remain = d.randInt63(), letterIdxMax
         }
         if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
             b[i] = letterBytes[idx]
@@ -92,31 +95,28 @@ func (env *Env) GenerateSelector(n int) string {
 type Env struct {
 	Db  datastore
 	Log *log.Logger
-
-	randLk  *sync.Mutex
-	rand *rand.Rand
 }
 
-func (env *Env) randInt63() (n int64) {
-	env.randLk.Lock()
-	n = rand.Int63()
-	env.randLk.Unlock()
+func (d *db) randInt63() (n int64) {
+	d.randLk.Lock()
+	n = d.rand.Int63()
+	d.randLk.Unlock()
 	return
 }
 
 // New enviornment which allows for database calls
 func New() *Env {
 	logger := log.New(os.Stdout, "log: ", log.Lshortfile)
-	
-	lk := &sync.Mutex{}
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return &Env{nil, logger, lk, r}
+	return &Env{nil, logger}
 }
 
 // ConnectDb connects the env to the sql database with the sqlOpt and the redis
 // database with redisOpt
 func (env *Env) ConnectDb(sqlOpt SQLOptions, redisOpt RedisOptions) {
 	loggerDb := log.New(os.Stdout, "db: ", log.Lshortfile)
+
+	lk := &sync.Mutex{}
+	ra := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	d, err := sql.Open("postgres", sqlOpt.String())
 	if err != nil {
@@ -137,5 +137,5 @@ func (env *Env) ConnectDb(sqlOpt SQLOptions, redisOpt RedisOptions) {
 	}
 
 	loggerDb.Printf("Connected to database")
-	env.Db = &db{d, loggerDb, r}
+	env.Db = &db{d, loggerDb, r, lk, ra}
 }

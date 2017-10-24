@@ -23,8 +23,7 @@ const (
 type User struct {
 	Selectable
 
-	userID    uint
-	validator string
+	ID    uint
 
 	Email     string
 	FirstName string
@@ -41,22 +40,22 @@ type userDatastore interface {
 	DeleteUser(selector string) error
 }
 
-func (db *db) CreateUser(user User) (*User, error) {
+func (d *db) CreateUser(user User) (*User, error) {
 	
 	return &User{}, nil
 }
 
-func (db *db) GetUser(selector string) (*User, error) {
+func (d *db) GetUser(selector string) (*User, error) {
 
 	return &User{}, nil
 }
 
-func (db *db) UpdateUser(user User) error {
+func (d *db) UpdateUser(user User) error {
 	
 	return nil
 }
 
-func (db *db) DeleteUser(selector string) error {
+func (d *db) DeleteUser(selector string) error {
 		
 	return nil
 }

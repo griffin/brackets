@@ -3,28 +3,67 @@ package env
 import (
 	"time"
 	"github.com/go-redis/redis"
+	"golang.org/x/crypto/bcrypt"
 	"strings"
 	"crypto/sha256"
 	"bytes"
 	"strconv"
+	"errors"
+	"encoding/json"
 )
 
 const (
-	createSession = "INSERT INTO sessions (validator, selector, user_id, exp) VALUES (?, ?, ?, ?)"
-	selectSession = "SELECT validator, user_id, exp FROM sessions WHERE selector=?"
-	invalidateSession = "DELETE FROM sessions WHERE selector=?"
-	invalidateAllSession = "DELETE FROM sessions WHERE user_id=?"
+	createSession = "INSERT INTO sessions (validator, selector, user_id, exp) VALUES ($1, $2, $3, $4)"
+	selectSession = "SELECT users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users WHERE users.selector=$1 "
+	validateUser = "SELECT id, selector, validator, first_name, last_name, gender, dob FROM users WHERE email=$1"
+	invalidateSession = "DELETE FROM sessions WHERE selector=$1"
+	invalidateAllSession = "DELETE FROM sessions WHERE user_id=$1"
+
+
+
+)
+
+var (
+	noUser = errors.New("No user found.")
+	incorrectPassword = errors.New("Incorrect password.")
 )
 
 type sessionDatastore interface {
-	CreateSession(userID int)
-	CheckSession(token string) (int, error)
-	InvalidateSession(token string)
-	InvalidateAllSessions(userID int)
+	CreateSession(username, password string) (*User, error)
+	CheckSession(token string) (*User, error)
+	InvalidateSession(user User) error
+	InvalidateAllSessions(user User) error
 }
 
-func (d *db) CreateSession(userID int) {
+func (d *db) CreateSession(email, password string) (*User, error) {
 
+	usr := &User{}
+	var validator string
+
+	//TODO check login times to prevent spam
+
+	err := d.DB.QueryRow(validateUser, email).Scan(&usr.ID, &usr.selector, &validator, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth)
+	if err != nil {
+		d.Printf("Couldn't find user with username %v", email)
+		return nil, noUser
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(validator), []byte(password))
+	if err != nil {
+		//TODO send goroutine to add to spam
+		return nil, incorrectPassword
+	}
+
+	go d.insertSession(usr)
+
+	return usr, nil
+}
+
+func (d *db) insertSession(user User){
+	validator := d.GenerateSelector()
+	selector :=
+
+	d.Exec(createSession)
 }
 
 func (d *db) InvalidateSession(token string) {
@@ -35,26 +74,22 @@ func (d *db) InvalidateAllSessions(userID int) {
 
 }
 
-func (d *db) CheckSession(token string) (int, error) {
+func (d *db) CheckSession(token string) (*User, error) {
 	
 	split := strings.Split(token, ":")
 	selector := split[0]
 	validator := sha256.Sum256([]byte(split[1]))
 
-	var valQuery string
-	var exp int64
-	var userID int
+	var usr *User
 
 	//Check Redis cache
 
-	token, err := d.Get(selector).Result()
+	jsonUser, err := d.Get(selector).Result()
 	if err == redis.Nil {
 		goto query
 	}
 
-	split = strings.Split(token, ":")
-	userID, err = strconv.Atoi(split[0])
-	valQuery = split[1]
+	err = json.Unmarshal([]byte(jsonUser), usr)
 
 	if err != nil {
 		d.Println("error parsing redis token")
@@ -74,13 +109,13 @@ func (d *db) CheckSession(token string) (int, error) {
 
 	check:
 
-	if bytes.Equal(validator[:], []byte(valQuery)[:]) { // TODO also check exp
+	if bytes.Equal(validator[:], []byte(valQuery)) { // TODO also check exp
 		d.Println("validator != valQ")
 		return -1, nil
 	}
 
 	if(exp > 0){ //TODO come up with when to update cache
-		go d.updateCache(string(validator[:]))
+		go d.updateCache(string(validator))
 	}
 
 	return 0, nil
