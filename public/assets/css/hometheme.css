@@ -1,0 +1,69 @@
+
+
+body
+{   
+    margin: 5px 20px; 
+    padding: 5px; 
+    background-color: #99ccff;
+}
+h1
+{
+    text-align: center; 
+}
+
+.right 
+{
+    float: right; 
+    /*border: solid black 2px; */
+    margin: 0 auto; 
+    width: 75%; 
+    position: relative; 
+   
+}
+.profile
+{
+    height: 250px; 
+    width: 20%;
+    margin: 10px; 
+    /*border: solid black 2px; */
+}
+.left
+{
+    float: left; 
+    margin: 10px; 
+    width: 20%; 
+    /*#border: solid black 2px; */
+    
+}
+.navbar li
+{
+    padding: 10px; 
+    border: solid white 2px; 
+    background-color: #ccff99;; 
+    margin: 10px 0px; 
+}
+
+.my_stats
+{
+    margin: 0 auto; 
+    height: 250px; 
+    position: relative;
+    text-align: center; 
+}
+.circles 
+{
+    width: 200px; 
+    height: 200px;  
+    border-radius: 175px; 
+    background: white; 
+    position: relative; 
+    display: inline-block; 
+    text-align: center; 
+    margin: 10px 30px;  
+}
+footer
+{
+    background: black; 
+    width: 100%; 
+    height: 50px; 
+}
