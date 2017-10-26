@@ -2,6 +2,7 @@ package env
 
 import (
 	"time"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
@@ -34,15 +35,30 @@ type User struct {
 }
 
 type userDatastore interface {
-	CreateUser(user User) (*User, error)
+	CreateUser(user User, password string) (*User, error)
 	GetUser(selector string) (*User, error)
 	UpdateUser(user User) error
 	DeleteUser(selector string) error
 }
 
-func (d *db) CreateUser(user User) (*User, error) {
-	
-	return &User{}, nil
+func (d *db) CreateUser(user User, password string) (*User, error) {
+	validator, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	selector := d.GenerateSelector(selectorLen)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := d.DB.Exec(createUser, selector, string(validator), user.FirstName, user.LastName, user.Gender, user.DateOfBirth, user.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := res.LastInsertId()
+
+	user.selector = selector
+	user.ID = uint(id)
+
+	return &user, nil
 }
 
 func (d *db) GetUser(selector string) (*User, error) {
