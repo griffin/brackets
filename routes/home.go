@@ -5,6 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	bootStrap = ""
+)
+
 type Env struct { *env.Env }
 
 func CastEnv(e *env.Env) *Env {
@@ -14,4 +18,22 @@ func CastEnv(e *env.Env) *Env {
 
 func (e *Env) GetHomeRoute(c *gin.Context){
 
+}
+
+func PushJS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		if pusher, ok := c.Writer.(http.Pusher); ok {
+            options := &http.PushOptions{
+                Header: http.Header{
+                    "Accept-Encoding": r.Header["Accept-Encoding"],
+                },
+			}
+			
+            if err := pusher.Push(bootStrap, options); err != nil {
+                log.Printf("Failed to push: %v", err)
+			}
+		}
+		
+	}
 }
