@@ -49,6 +49,7 @@ type RedisOptions struct {
 	Port int
 }
 
+// String returns a string representation of a sql options
 func (s SQLOptions) String() string {
 	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v", s.User, s.Password, s.Host, s.Port, s.Database)
 }
@@ -97,6 +98,8 @@ type Env struct {
 	Log *log.Logger
 }
 
+// randInt63 gets a random int
+// Safe for concurrent use.
 func (d *db) randInt63() (n int64) {
 	d.randLk.Lock()
 	n = d.rand.Int63()
