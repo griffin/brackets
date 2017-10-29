@@ -1,5 +1,5 @@
 package env
-
+/*
 import (
 	"time"
 )
@@ -51,3 +51,4 @@ func (d *db) UpdatePost(team Team) error {
 func (d *db) DeletePost(selector string) error {
 	return nil
 }
+*/

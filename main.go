@@ -73,11 +73,13 @@ func main() {
 	router.DELETE("/team/:selector", nil)
 	router.POST("/team", nil)
 
+	/*
 	router.GET("/team/:selector/posts", nil)
 	router.GET("/team/:teamselector/post/:postselector", nil)
 	router.PUT("/team/:selector/post", nil)
 	router.DELETE("/team/:teamselector/post/:postselector", nil)
 	router.POST("/team/:teamselector/post/:postselector", nil)
+	*/
 
 	router.GET("/user/:selector", nil)
 	router.PUT("/user/:selector", nil)

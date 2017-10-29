@@ -9,17 +9,16 @@ import (
 	"crypto/sha256"
 	"bytes"
 	"errors"
-	"time"
 	"encoding/json"
 )
 
 const (
 	createSession = "INSERT INTO sessions (validator, selector, user_id, exp) VALUES ($1, $2, $3, $4)"
-	selectSession = "SELECT users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users WHERE users.selector=$1 "
+	selectSession = "SELECT users.id, users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users WHERE users.selector=$1 "
 	validateUser = "SELECT id, selector, validator, first_name, last_name, gender, dob FROM users WHERE email=$1"
 	invalidateSession = "DELETE FROM sessions WHERE selector=$1"
 	invalidateAllSession = "DELETE FROM sessions WHERE user_id=$1"
-
+	getAllSessionsForUser = "SELECT selector FROM sessions WHERE user_id=$1"
 
 	selectorLen = 12
 	validatorLen = 20
@@ -28,8 +27,8 @@ const (
 type sessionDatastore interface {
 	CreateSession(username, password string) (*User, error)
 	CheckSession(token string) (*User, error)
-	InvalidateSession(user User) error
-	InvalidateAllSessions(user User) error
+	InvalidateSession(token string) error
+	InvalidateAllSessions(usr User) error
 }
 
 func (d *db) CreateSession(email, password string) (*User, error) {
@@ -58,7 +57,7 @@ func (d *db) CreateSession(email, password string) (*User, error) {
 func (d *db) insertSession(user User) string {
 	validator := d.GenerateSelector(validatorLen)
 	selector := d.GenerateSelector(selectorLen)
-	exp := time.Now().Add(time.Hour * 2) //TODO
+	exp := time.Now().Add(time.Hour * 2).UnixNano() //TODO
 
 	hashValidator := sha256.Sum256([]byte(validator))
 
@@ -70,21 +69,48 @@ func (d *db) insertSession(user User) string {
 	return fmt.Sprintf("%v:%v", selector, validator)
 }
 
-func (d *db) InvalidateSession(token string) {
+func (d *db) InvalidateSession(token string) error {
+	split := strings.Split(token, ":")
+	selector := split[0]
 
+	_, err := d.DB.Exec(invalidateSession, selector)
+	if err != nil {
+		return errors.New("couldn't invalidate sessions")
+	}
+
+	err = d.Del(selector).Err()
+
+	return nil
 }
 
-func (d *db) InvalidateAllSessions(userID int) {
+func (d *db) InvalidateAllSessions(usr User) error {
+	var v []string
 
+	rows, err := d.DB.Query(getAllSessionsForUser, usr.ID)
+	for rows.Next() {
+        var validator string
+		rows.Scan(&validator);
+		v = append(v, validator)
+	}
+
+	err = d.Del(v...).Err()
+
+	_, err = d.DB.Exec(invalidateAllSession, usr.ID)
+	if err != nil {
+		return errors.New("couldn't invalidate all sessions")
+	}
+	
+	return nil
 }
 
 func (d *db) CheckSession(token string) (*User, error) {
-	
 	split := strings.Split(token, ":")
 	selector := split[0]
 	validator := sha256.Sum256([]byte(split[1]))
+	var valQuery string
+	var exp int64
 
-	var usr *User
+	var usr User
 
 	//Check Redis cache
 
@@ -104,33 +130,41 @@ func (d *db) CheckSession(token string) (*User, error) {
 
 	query: // Skip to the SQL query
 
-	err = d.QueryRow(selectSession, selector).Scan(usr.valQuery, &userID, &exp)
+	err = d.QueryRow(selectSession, selector).Scan(&usr.ID, &usr.Email, &usr.FirstName, &usr.LastName, usr.Gender, usr.DateOfBirth, &valQuery, &exp)
 	if err != nil {
-		d.Println("no validator found")
-		return nil, nil
+		return nil, errors.New("no validator found")
 	}
 
 	check:
 
 	if bytes.Equal(validator[:], []byte(valQuery)) { // TODO also check exp
-		d.Println("validator != valQ")
-		return nil, nil
+		return nil, errors.New("validator != valQ")
 	}
 
-	if(exp > 0){ //TODO come up with when to update cache
-		go d.updateCache(string(validator[:]))
+	if(time.Now().UnixNano() < exp){ //TODO come up with when to update cache
+		go d.updateCache(usr, token)
 	}
 
-	return 0, usr
+	return &usr, nil
 
 }
 
-func (d *db) updateCache(selector string){
-
+func (d *db) updateCache(usr User, token string) error {
+	split := strings.Split(token, ":")
+	selector := split[0]
 	var validator string
 	var userID int
 	var exp int64
 
-	err := d.QueryRow(selectSession, selector).Scan(&validator, &userID, &exp)
+	json, err := json.Marshal(usr)
+	if err != nil {
+		return errors.New("falied to marshal user")
+	}
 
+	err = d.Set(validator, string(json), time.Duration(exp - time.Now().UnixNano())).Err()
+	if err != nil {
+		return errors.New("couldn't update cache")
+	}
+
+	return nil
 }
