@@ -13,11 +13,10 @@ const (
 	insertOrganizer = "INSERT INTO organizers (user_id, tournament_id, rank) VALUES ($1, $2, $3)"
 	deleteOrganizer = "DELETE FROM organizers WHERE tournament_id=$2 AND user_id=$3" //FIX
 	selectOrganizer = "SELECT rank WHERE tournament_id=$2 AND user_id=$3"
+	updateOrganizer = "UPDATE organizers SET rank=$1 WHERE tournament_id=$2 AND user_id=$3"
 
 	selectOrganizers = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, organizers.rank FROM users JOIN organizers WHERE organizers.tournament_id=$1"
-	updateOrganizers = "UPDATE organizers SET rank=$1 WHERE tournament_id=$2 AND user_id=$3"
 	deleteAllOrganizers = "DELETE FROM organizers WHERE tournament_id=$1"
-
 )
 
 
@@ -91,7 +90,7 @@ func (d *db) UpdateTournament(tour Tournament) error {
 	res, err := tx.Exec(updateTournament, tour.ID, tour.Name);
 	for _, e := range tour.Organizers {
 		if e.Rank > 0 { // INSERT if new
-			res, err := tx.Exec(updateOrganizers, e.Rank, tour.ID, e.ID)
+			res, err := tx.Exec(updateOrganizer, e.Rank, tour.ID, e.ID)
 		} else {
 			res, err := tx.Exec(deleteOrganizer, tour.ID, e.ID)
 		}
@@ -109,8 +108,11 @@ func (d *db) DeleteTournament(tour Tournament) error {
 	res, err := tx.Exec(deleteTournament, tour.ID)
 	res, err = tx.Exec(deleteAllOrganizers, tour.ID)
 	err = tx.Commit()
+
+	return nil
 }
 
-func (d *db) GetOrganizer(selector string, usr User) (*Organizer, err) {
+func (d *db) GetOrganizer(selector string, usr User) (*Organizer, error) {
 	//FINISH, used to validate permissions
+	return nil, nil
 }
