@@ -50,9 +50,9 @@ func (org *Organizer) Delete(){
 func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
 	selector := d.GenerateSelector(selectorLen)
 	tx, err := d.DB.Begin()
-	res, err := tx.Exec(createTournament, selector, tour.Name);
+	tx.Exec(createTournament, selector, tour.Name);
 	for _, e := range tour.Organizers {
-		res, err := tx.Exec(insertOrganizer, e.ID, tour.ID, e.Rank)
+		tx.Exec(insertOrganizer, e.ID, tour.ID, e.Rank)
 	}
 	err = tx.Commit()
 	if err != nil {
@@ -87,12 +87,12 @@ func (d *db) GetTournament(selector string) (*Tournament, error) {
 
 func (d *db) UpdateTournament(tour Tournament) error {
 	tx, err := d.DB.Begin()
-	res, err := tx.Exec(updateTournament, tour.ID, tour.Name);
+	tx.Exec(updateTournament, tour.ID, tour.Name);
 	for _, e := range tour.Organizers {
 		if e.Rank > 0 { // INSERT if new
-			res, err := tx.Exec(updateOrganizer, e.Rank, tour.ID, e.ID)
+			tx.Exec(updateOrganizer, e.Rank, tour.ID, e.ID)
 		} else {
-			res, err := tx.Exec(deleteOrganizer, tour.ID, e.ID)
+			tx.Exec(deleteOrganizer, tour.ID, e.ID)
 		}
 	}
 	err = tx.Commit()
@@ -104,10 +104,10 @@ func (d *db) UpdateTournament(tour Tournament) error {
 }
 
 func (d *db) DeleteTournament(tour Tournament) error {
-	tx, err := d.DB.Begin()
-	res, err := tx.Exec(deleteTournament, tour.ID)
-	res, err = tx.Exec(deleteAllOrganizers, tour.ID)
-	err = tx.Commit()
+	tx, _ := d.DB.Begin()
+	tx.Exec(deleteTournament, tour.ID)
+	tx.Exec(deleteAllOrganizers, tour.ID)
+	tx.Commit()
 
 	return nil
 }

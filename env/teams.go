@@ -53,9 +53,9 @@ type Player struct {
 func (d *db) CreateTeam(team Team) (*Team, error){
 	selector := d.GenerateSelector(selectorLen)
 	tx, err := d.DB.Begin()
-	res, err := tx.Exec(createTeam, selector, team.Name, team.tournamentID);
+	tx.Exec(createTeam, selector, team.Name, team.tournamentID);
 	for _, e := range team.Players {
-		res, err := tx.Exec(insertPlayer, e.ID, team.ID, e.Rank)
+		tx.Exec(insertPlayer, e.ID, team.ID, e.Rank)
 	}
 	err = tx.Commit()
 	if err != nil {
@@ -70,8 +70,13 @@ func (d *db) GetTeam(selector string) (*Team, error){
 	team.selector = selector
 	
 	tx, err := d.DB.Begin()
+	if err != nil {
+		return nil, errors.New("Couldn't get team")
+	}
+	
 	tx.QueryRow(getTeam, team.Selector()).Scan(team.ID, team.tournamentID, team.Name)
 	rows, err := tx.Query(selectPlayers, team.ID)
+
 	err = tx.Commit()
 	if err != nil {
 		return nil, errors.New("failed to get team")
@@ -88,12 +93,12 @@ func (d *db) GetTeam(selector string) (*Team, error){
 
 func (d *db) UpdateTeam(team Team) error{
 	tx, err := d.DB.Begin()
-	res, err := tx.Exec(updateTeam, team.Name, team.Selector());
+	tx.Exec(updateTeam, team.Name, team.Selector());
 	for _, e := range team.Players {
 		if e.Rank > 0 { // INSERT if new
-			res, err := tx.Exec(updatePlayer, e.Rank, team.ID, e.ID)
+			tx.Exec(updatePlayer, e.Rank, team.ID, e.ID)
 		} else {
-			res, err := tx.Exec(deletePlayer, team.ID, e.ID)
+			tx.Exec(deletePlayer, team.ID, e.ID)
 		}
 	}
 	err = tx.Commit()
@@ -106,9 +111,12 @@ func (d *db) UpdateTeam(team Team) error{
 
 func (d *db) DeleteTeam(team Team) error {
 	tx, err := d.DB.Begin()
-	res, err := tx.Exec(deleteTeam, team.ID)
-	res, err = tx.Exec(deleteAllPlayers, team.ID)
-	err = tx.Commit()
+	if err != nil {
+		return errors.New("Couldn't delete team")
+	}
+	tx.Exec(deleteTeam, team.ID)
+	tx.Exec(deleteAllPlayers, team.ID)
+	tx.Commit()
 
 	return nil
 }
