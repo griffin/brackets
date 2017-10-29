@@ -26,7 +26,7 @@ type datastore interface {
 	userDatastore
 	sessionDatastore
 	teamDatastore
-	postDatastore
+	//postDatastore
 	tournamentDatastore
 	gameDatastore
 }

@@ -36,28 +36,28 @@ type User struct {
 }
 
 type userDatastore interface {
-	CreateUser(user User, password string) (*User, error)
+	CreateUser(usr User, password string) (*User, error)
 	GetUser(selector string) (*User, error)
-	UpdateUser(user User) error
-	DeleteUser(selector string) error
+	UpdateUser(usr User) error
+	DeleteUser(usr User) error
 }
 
-func (d *db) CreateUser(user User, password string) (*User, error) {
+func (d *db) CreateUser(usr User, password string) (*User, error) {
 	validator, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	selector := d.GenerateSelector(selectorLen)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := d.DB.Exec(createUser, selector, string(validator), user.FirstName, user.LastName, user.Gender, user.DateOfBirth, user.Email)
+	res, err := d.DB.Exec(createUser, selector, string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	id, err := res.LastInsertId()
 
-	user.selector = selector
-	user.ID = uint(id)
+	usr.selector = selector
+	usr.ID = uint(id)
 
 	return &user, nil
 }

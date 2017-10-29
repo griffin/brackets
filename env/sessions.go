@@ -27,7 +27,7 @@ const (
 type sessionDatastore interface {
 	CreateSession(username, password string) (*User, error)
 	CheckSession(token string) (*User, error)
-	InvalidateSession(usr User) error
+	InvalidateSession(token string) error
 	InvalidateAllSessions(usr User) error
 }
 

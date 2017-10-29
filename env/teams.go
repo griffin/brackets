@@ -2,8 +2,8 @@ package env
 
 
 const (
-	createTeam = "INSERT INTO teams () VALUES ()"
-	getTeam = "SELECT id, tournamentID, name FROM"
+	createTeam = "INSERT INTO teams (selector, name, tournament_id) VALUES ($1, $2, $3)"
+	getTeam = "SELECT id, tournamentID, name FROM teams WHERE selector"
 	updateTeam = ""
 	deleteTeam = ""
 )
@@ -11,9 +11,10 @@ const (
 type Rank int
 
 const (
-	Owner Rank = iota
-	Moderator
-	Member
+	Delete Rank = -1
+	Owner Rank = 0
+	Moderator Rank = 1
+	Member Rank = 3
 )
 
 type teamDatastore interface {
@@ -24,6 +25,10 @@ type teamDatastore interface {
 }
 
 func (d *db) CreateTeam(team Team) (*Team, error){
+
+	
+
+
 	return nil, nil
 }
 
@@ -44,7 +49,7 @@ func (d *db) DeleteTeam(selector string) error {
 type Team struct {
 	Selectable
 
-	id           uint
+	ID           uint
 	tournamentID uint
 
 	Name    string
