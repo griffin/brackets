@@ -25,13 +25,13 @@ const (
 )
 
 type sessionDatastore interface {
-	CreateSession(username, password string) (*User, error)
+	CreateSession(username, password string) (*User, string, error)
 	CheckSession(token string) (*User, error)
 	InvalidateSession(token string) error
 	InvalidateAllSessions(usr User) error
 }
 
-func (d *db) CreateSession(email, password string) (*User, error) {
+func (d *db) CreateSession(email, password string) (*User, string, error) {
 
 	usr := &User{}
 	var validator string
@@ -40,18 +40,18 @@ func (d *db) CreateSession(email, password string) (*User, error) {
 
 	err := d.DB.QueryRow(validateUser, email).Scan(&usr.ID, &usr.selector, &validator, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth)
 	if err != nil {
-		return nil, errors.New("couldn't find user")
+		return nil, "", errors.New("couldn't find user")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(validator), []byte(password))
 	if err != nil {
 		//TODO send goroutine to add to spam
-		return nil, errors.New("incorrect password")
+		return nil, "", errors.New("incorrect password")
 	}
 
 	session := d.insertSession(*usr)
 
-	return usr, nil
+	return usr, session, nil
 }
 
 func (d *db) insertSession(user User) string {
@@ -152,8 +152,7 @@ func (d *db) CheckSession(token string) (*User, error) {
 func (d *db) updateCache(usr User, token string) error {
 	split := strings.Split(token, ":")
 	selector := split[0]
-	var validator string
-	var userID int
+	//var validator string //Add to json
 	var exp int64
 
 	json, err := json.Marshal(usr)
@@ -161,7 +160,7 @@ func (d *db) updateCache(usr User, token string) error {
 		return errors.New("falied to marshal user")
 	}
 
-	err = d.Set(validator, string(json), time.Duration(exp - time.Now().UnixNano())).Err()
+	err = d.Set(selector, string(json), time.Duration(exp - time.Now().UnixNano())).Err()
 	if err != nil {
 		return errors.New("couldn't update cache")
 	}

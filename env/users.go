@@ -44,22 +44,21 @@ type userDatastore interface {
 
 func (d *db) CreateUser(usr User, password string) (*User, error) {
 	validator, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	selector := d.GenerateSelector(selectorLen)
+	usr.selector = d.GenerateSelector(selectorLen)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := d.DB.Exec(createUser, selector, string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
+	res, err := d.DB.Exec(createUser, usr.Selector(), string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
 	if err != nil {
 		return nil, err
 	}
 
 	id, err := res.LastInsertId()
 
-	usr.selector = selector
 	usr.ID = uint(id)
 
-	return &user, nil
+	return &usr, nil
 }
 
 func (d *db) GetUser(selector string) (*User, error) {
