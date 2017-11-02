@@ -1,0 +1,22 @@
+
+
+<div class="tean_info">
+
+<table>
+    <th> 
+        <td> Name </td> 
+        <td> Position </td> 
+        <td> Stats </td> 
+    </th> 
+    {{range .Users}}
+    <tr> 
+        <td> {{.FirstName}} {{.LastName}} </td> 
+        <td> {{.Position}} </td> 
+        <td> <a href="#"> Stats </a> </td> 
+
+    </tr> 
+    {{end}}
+
+</table> 
+
+</div> 

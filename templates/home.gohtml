@@ -1,0 +1,72 @@
+<html>
+        <head> 
+            <title> BRACKETS </title>
+            
+            
+            <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+            <link rel="stylesheet" href="home.css"> 
+            
+            <!-- jQuery library -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script src="home.js"></script>
+            <!-- Latest compiled JavaScript -->
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        </head>
+<body> 
+
+        
+    <div class="wrapper">  
+
+        <nav id="sidebar"> 
+            <div class="nav_header">
+                 <h3> Navigation</h3> 
+            </div>
+            <div class="nav_links"> 
+                <ul> 
+                    <li> <a href="">Home</a> </li>
+                    <li><a href="#"> My Stuff </a> </li>
+                    <li><a href="#"> Teams </a> </li> 
+                     <li><a href="#"> Ranks</a> </li>
+                </ul>
+            </div> 
+         </nav>
+
+
+    <div id="content">
+            <div class="jumbotron"> 
+                    <h1> Brackets </h1> 
+            </div>
+
+
+            <div class="greating"> 
+                <h3>Hello {{if .FirstName}} ,{{.FirstName}} {{else}} ! {{end}} </h3> 
+            </div>
+
+            {{if .ID}}
+            <div class="my_stuff">
+                <ul> 
+                    <li> Team </li> 
+                    <li>My Games </li>
+                    <li> Tournaments </li>
+                    <li> My Profile </li> 
+                </ul>
+
+            {{end}}    
+
+
+                 <div class="main_stuff"> 
+                   <div class="yeild"> 
+                    <!-- yeild will be replaced with content from other html files -->
+                    </div> 
+                </div>
+            </div>
+
+           
+
+
+    </div> 
+</body>
+
+</div> 
+</html>

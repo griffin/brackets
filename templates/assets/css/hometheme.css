@@ -14,18 +14,22 @@ h1
 .right 
 {
     float: right; 
-    /*border: solid black 2px; */
     margin: 0 auto; 
     width: 75%; 
     position: relative; 
+    border: solid black 2px; 
    
+}
+.profileTable td 
+{
+    border: solid 2px black; 
 }
 .profile
 {
     height: 250px; 
     width: 20%;
     margin: 10px; 
-    /*border: solid black 2px; */
+    border: solid black 2px; 
 }
 .left
 {
