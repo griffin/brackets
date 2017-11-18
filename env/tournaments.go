@@ -6,7 +6,7 @@ import (
 
 const (
 	createTournament = "INSERT INTO tournaments (id, selector, name) VALUES ($1, $2)"
-	getTournament = "SELECT selector, name FROM tournament WHERE selector=$1"
+	getTournament    = "SELECT selector, name FROM tournament WHERE selector=$1"
 	updateTournament = "UPDATE tournaments SET name=$1 WHERE id=$2"
 	deleteTournament = "DELETE FROM tournaments WHERE id=$1"
 
@@ -15,10 +15,9 @@ const (
 	selectOrganizer = "SELECT rank WHERE tournament_id=$2 AND user_id=$3"
 	updateOrganizer = "UPDATE organizers SET rank=$1 WHERE tournament_id=$2 AND user_id=$3"
 
-	selectOrganizers = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, organizers.rank FROM users JOIN organizers WHERE organizers.tournament_id=$1"
+	selectOrganizers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, organizers.rank FROM users JOIN organizers WHERE organizers.tournament_id=$1"
 	deleteAllOrganizers = "DELETE FROM organizers WHERE tournament_id=$1"
 )
-
 
 type tournamentDatastore interface {
 	CreateTournament(tour Tournament) (*Tournament, error)
@@ -31,9 +30,9 @@ type Tournament struct {
 	Selectable
 	ID uint
 
-	Name     string
+	Name       string
 	Organizers []*Organizer
-	Teams    []*Team
+	Teams      []*Team
 }
 
 type Organizer struct {
@@ -41,7 +40,7 @@ type Organizer struct {
 	Rank
 }
 
-func (org *Organizer) Delete(){
+func (org *Organizer) Delete() {
 	org.Rank = Delete // TODO
 }
 
@@ -50,7 +49,7 @@ func (org *Organizer) Delete(){
 func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
 	selector := d.GenerateSelector(selectorLen)
 	tx, err := d.DB.Begin()
-	tx.Exec(createTournament, selector, tour.Name);
+	tx.Exec(createTournament, selector, tour.Name)
 	for _, e := range tour.Organizers {
 		tx.Exec(insertOrganizer, e.ID, tour.ID, e.Rank)
 	}
@@ -58,7 +57,6 @@ func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
 	if err != nil {
 		return nil, errors.New("failed to creat tournament")
 	}
-
 
 	return &tour, nil
 }
@@ -81,13 +79,12 @@ func (d *db) GetTournament(selector string) (*Tournament, error) {
 		tour.Organizers = append(tour.Organizers, org)
 	}
 
-
 	return &tour, nil
 }
 
 func (d *db) UpdateTournament(tour Tournament) error {
 	tx, err := d.DB.Begin()
-	tx.Exec(updateTournament, tour.ID, tour.Name);
+	tx.Exec(updateTournament, tour.ID, tour.Name)
 	for _, e := range tour.Organizers {
 		if e.Rank > 0 { // INSERT if new
 			tx.Exec(updateOrganizer, e.Rank, tour.ID, e.ID)
@@ -113,6 +110,6 @@ func (d *db) DeleteTournament(tour Tournament) error {
 }
 
 func (d *db) GetOrganizer(selector string, usr User) (*Organizer, error) {
-	//FINISH, used to validate permissions
+	// Don't know if needed yet
 	return nil, nil
 }

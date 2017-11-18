@@ -1,14 +1,14 @@
 package env
 
 import (
-	"time"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 const (
 	createUser = "INSERT INTO users (selector, validator, first_name, last_name, gender, dob, email) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-	getUser = "SELECT id, first_name, last_name, gender, dob, email FROM users WHERE selector=$1"
+	getUser    = "SELECT id, first_name, last_name, gender, dob, email FROM users WHERE selector=$1"
 	updateUser = "UPDATE users SET first_name=$1, last_name=$2, gender=$3, dob=$4, email=$5 WHERE id=$6"
 	deleteUser = "DELETE FROM users WHERE id=$1"
 )
@@ -16,16 +16,16 @@ const (
 type Gender int8
 
 const (
-	Male Gender = iota
-	Female
-	Other
-	PreferNotToSay
+	Male           Gender = 0
+	Female         Gender = 1
+	Other          Gender = 2
+	PreferNotToSay Gender = 3
 )
 
 type User struct {
 	Selectable
 
-	ID    uint
+	ID uint
 
 	Email     string
 	FirstName string
@@ -73,7 +73,7 @@ func (d *db) GetUser(selector string) (*User, error) {
 }
 
 func (d *db) UpdateUser(usr User) error {
-	
+
 	_, err := d.DB.Exec(updateUser, usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email, usr.ID)
 	if err != nil {
 		return errors.New("update user failed")
@@ -83,7 +83,7 @@ func (d *db) UpdateUser(usr User) error {
 }
 
 func (d *db) DeleteUser(usr User) error {
-		
+
 	_, err := d.DB.Exec(deleteUser, usr.ID)
 	if err != nil {
 		return errors.New("delete user failed")

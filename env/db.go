@@ -1,14 +1,14 @@
 package env
 
 import (
-	"sync"
-	"github.com/go-redis/redis"
 	"database/sql"
 	"fmt"
+	"github.com/go-redis/redis"
 	"log"
-	"os"
-	"time"
 	"math/rand"
+	"os"
+	"sync"
+	"time"
 
 	_ "github.com/lib/pq" // Postgres driver
 )
@@ -18,8 +18,8 @@ type db struct {
 	*log.Logger
 	*redis.Client
 
-	randLk  *sync.Mutex
-	rand *rand.Rand
+	randLk *sync.Mutex
+	rand   *rand.Rand
 }
 
 type datastore interface {
@@ -34,10 +34,10 @@ type datastore interface {
 // SQLOptions lets you define the parameters to connect to
 // a sql database
 type SQLOptions struct {
-	User string
+	User     string
 	Password string
-	Host string
-	Port int
+	Host     string
+	Port     int
 	Database string
 }
 
@@ -45,13 +45,13 @@ type SQLOptions struct {
 // a redis database
 type RedisOptions struct {
 	Password string
-	Host string
-	Port int
+	Host     string
+	Port     int
 }
 
 // String returns a string representation of a sql options
 func (s SQLOptions) String() string {
-	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v", s.User, s.Password, s.Host, s.Port, s.Database)
+	return fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", s.User, s.Password, s.Host, s.Port, s.Database)
 }
 
 // Selectable allows a struct to be selectable in a database
@@ -65,30 +65,30 @@ func (s Selectable) Selector() string {
 }
 
 const (
-	letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    letterIdxBits = 6                    // 6 bits to represent a letter index
-    letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
-    letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
+	letterBytes   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	letterIdxBits = 6                    // 6 bits to represent a letter index
+	letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
+	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
 )
 
 // GenerateSelector generates a selector of length n using the env's random
 // Safe for concurrent use.
 func (d *db) GenerateSelector(n int) string {
-    b := make([]byte, n)
-    // A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
-    for i, cache, remain := n-1, d.randInt63(), letterIdxMax; i >= 0; {
-        if remain == 0 {
-            cache, remain = d.randInt63(), letterIdxMax
-        }
-        if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
-            b[i] = letterBytes[idx]
-            i--
-        }
-        cache >>= letterIdxBits
-        remain--
-    }
+	b := make([]byte, n)
+	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
+	for i, cache, remain := n-1, d.randInt63(), letterIdxMax; i >= 0; {
+		if remain == 0 {
+			cache, remain = d.randInt63(), letterIdxMax
+		}
+		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
+			b[i] = letterBytes[idx]
+			i--
+		}
+		cache >>= letterIdxBits
+		remain--
+	}
 
-    return string(b)
+	return string(b)
 }
 
 // Env represents the environment that is needed to
@@ -126,19 +126,22 @@ func (env *Env) ConnectDb(sqlOpt SQLOptions, redisOpt RedisOptions) {
 		loggerDb.Fatal(err)
 	}
 
-	redisConv := &redis.Options {
-		Addr: fmt.Sprintf("%v:%v", redisOpt.Host, redisOpt.Port),
-		Password: redisOpt.Password,
-		DB: 0,
-	}
+	/*
+			redisConv := &redis.Options {
+				Addr: fmt.Sprintf("%v:%v", redisOpt.Host, redisOpt.Port),
+				Password: redisOpt.Password,
+				DB: 0,
+			}
 
-	r := redis.NewClient(redisConv)
+			r := redis.NewClient(redisConv)
 
-	_, err = r.Ping().Result()
-	if err != nil {
-		loggerDb.Fatal(err)
-	}
+
+		_, err = r.Ping().Result()
+		if err != nil {
+			loggerDb.Fatal(err)
+		}
+	*/
 
 	loggerDb.Printf("Connected to database")
-	env.Db = &db{d, loggerDb, r, lk, ra}
+	env.Db = &db{d, loggerDb, nil, lk, ra}
 }
