@@ -1,4 +1,4 @@
-package gen
+package main
 
 import (
 	"encoding/csv"
@@ -21,7 +21,7 @@ func main() {
 	e := castEnv(env.New())
 
 	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("..")
 	err := viper.ReadInConfig()
 	if err != nil {
 		e.Log.Fatalf("Error reading config file: %s \n", err)
@@ -70,17 +70,29 @@ func (e *Env) GenUsers() {
 
 		fmt.Println(record)
 
+		dob, _ := time.Parse("01/02/2006", record[4])
+
 		usr := env.User{
 			Email:       record[2],
 			FirstName:   record[0],
 			LastName:    record[1],
-			Gender:      0,
-			DateOfBirth: time.Now(),
+			Gender:      genderMap(record[3]),
+			DateOfBirth: dob,
 		}
 
-		_, err = e.Db.CreateUser(usr, record[3])
+		_, err = e.Db.CreateUser(usr, record[5])
 		fmt.Println(err)
 	}
+}
+
+func genderMap(g string) env.Gender {
+	switch g {
+	case "Male":
+		return 0
+	case "Female":
+		return 1
+	}
+	return 2
 }
 
 func (e *Env) GenTour() {

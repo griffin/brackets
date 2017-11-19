@@ -103,3 +103,12 @@ func (g Gender) String() string {
 	}
 	return "Prefer not to say"
 }
+
+func Age(birthday time.Time) int {
+	now := time.Now()
+	years := now.Year() - birthday.Year()
+	if now.YearDay() < birthday.YearDay() {
+		years--
+	}
+	return years
+}

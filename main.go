@@ -7,6 +7,7 @@ import (
 	//"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
+	"html/template"
 )
 
 func main() {
@@ -50,6 +51,12 @@ func main() {
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
+	fm := template.FuncMap{
+		"age": env.Age,
+	}
+
+	e.Template.Funcs(fm)
+
 	_, err = e.Template.ParseFiles("public/index.html",
 		"public/notfound.html",
 		"public/user/user_index.html",
@@ -73,7 +80,7 @@ func main() {
 
 	router.POST("/logout", e.PostLogoutRoute)
 
-	router.GET("/register", e.RegisterRoute)
+	router.GET("/register", e.GetRegisterRoute)
 	router.POST("/register", e.PostRegisterRoute)
 
 	router.GET("/settings", e.GetSettingsRoute)

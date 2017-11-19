@@ -13,8 +13,11 @@ func (e *Env) GetLoginRoute(c *gin.Context) {
 }
 
 func (e *Env) PostLoginRoute(c *gin.Context) {
-	email, e := c.GetPostForm("email")
-	password, e := c.GetPostForm("passwd")
+	email, e1 := c.GetPostForm("email")
+	password, e2 := c.GetPostForm("passwd")
+	if e1 || e2 {
+
+	}
 
 	_, token, err := e.Db.CreateSession(email, password)
 	if err != nil {

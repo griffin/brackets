@@ -10,24 +10,24 @@
 <body> 
 
 <div id="container">
-    <div id="login-form" class="well" align="center">
-        <h2><a href="/">brackets</a> Register</h2>
+        <div id="login-form" class="well center">
+        <h2 align="center"><a href="/">brackets</a> Register</h2>
         <form action="/register" method="POST">
-            First Name: <input type="text" type="text" name="first_name"><br>
-            Last Name: <input type="text" type="text" name="last_name"><br>
-            Email: <input type="text" type="email" name="email"><br>
-            Password: <input type="text" type="password" name="passwd1"><br>
-            Password (Reenter): <input type="text" type="password" name="passwd2"><br>
-            Date of Birth: <input type="text" type="date" name="dob"><br>
+            First Name: <input type="text" class="form-control" type="text" name="first_name" required><br>
+            Last Name: <input type="text" class="form-control" type="text" name="last_name" required><br>
+            Email: <input type="text" class="form-control" type="email" name="email" required><br>
+            Password: <input type="text" class="form-control" type="password" name="passwd1" required><br>
+            Password (Reenter): <input type="text" class="form-control" type="password" name="passwd2" required><br>
+            Date of Birth: <input type="date" class="form-control" name="dob" required><br>
             Gender:  
-                <select name="gender">
+                <select class="form-control" name="gender" required>
                     <option value="m">Male</option>
                     <option value="f">Female</option>
                     <option value="o">Other</option>
                     <option value="no">Prefer not to say</option>
                 </select> <br>
 
-            <input type="submit" value="Submit">
+            <input type="submit" class="btn btn-primary" value="Submit">
         </form>
     </div>
 
