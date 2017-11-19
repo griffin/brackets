@@ -4,24 +4,12 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	//	"math/rand"
 	"os"
 	"time"
 )
 
-func GenUsers() {
-	e := New()
-
-	sql := SQLOptions{
-		"postgres",
-		"mysecretpassword",
-		"localhost",
-		5432,
-		"brackets",
-	}
-
-	redis := RedisOptions{}
-
-	e.ConnectDb(sql, redis)
+func (e *Env) GenUsers() {
 
 	file, _ := os.Open("test.csv")
 	r := csv.NewReader(file)
@@ -45,5 +33,26 @@ func GenUsers() {
 		_, err = e.Db.CreateUser(usr, record[3])
 		fmt.Println(err)
 	}
+}
 
+func (e *Env) GenTour() {
+
+	file, _ := os.Open("tour.csv")
+	r := csv.NewReader(file)
+
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+
+		fmt.Println(record)
+
+		tour := Tournament{
+			Name: record[0],
+		}
+
+		_, err = e.Db.CreateTournament(tour)
+		fmt.Println(err)
+	}
 }

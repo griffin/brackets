@@ -1,15 +1,22 @@
 package routes
 
 import (
-	"html/template"
-	"io/ioutil"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (e *Env) GetUser(c *gin.Context) {
 
-	src, _ := ioutil.ReadFile("../templates/user/userprofile.html")
-	t, _ := template.New("userprofile").Parse(string(src))
+	t := e.Template.Lookup("userprofile.html")
 
-	t.Execute(c.Writer, nil)
+	usr, err := e.Db.GetUser(c.Param("selector"))
+	if err != nil {
+		t = e.Template.Lookup("notfound.html")
+		c.Status(http.StatusNotFound)
+		t.Execute(c.Writer, nil)
+		return
+	}
 
+	c.Status(http.StatusOK)
+	t.Execute(c.Writer, usr)
 }

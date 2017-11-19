@@ -11,7 +11,6 @@ import (
 
 func main() {
 
-	//env.GenData()
 	router := gin.Default()
 	e := routes.CastEnv(env.New())
 
@@ -51,26 +50,34 @@ func main() {
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
-	/*
-		router.GET("/", e.GetHomeRoute)
+	_, err = e.Template.ParseFiles("public/index.html",
+		"public/notfound.html",
+		"public/user/user_index.html",
+		"public/team/team_index",
+		"public/tournament/tournament_index.html")
 
-		router.GET("/login", e.GetLoginRoute)
-		router.POST("/login", nil)
-		router.POST("/logout", nil)
-		router.GET("/register", nil)
+	if err != nil {
+		e.Log.Fatal(err)
+	}
 
-		router.GET("/tournament/:selector", nil)
-		router.PUT("/tournament/:selector", nil)
-		router.DELETE("/tournament/:selector", nil)
-		router.POST("/tournament", nil)
+	router.GET("/", e.GetHomeRoute)
 
-		router.GET("/team/:selector", nil)
-		router.PUT("/team/:selector", nil)
-		router.DELETE("/team/:selector", nil)
-		router.POST("/team", nil)
-	*/
+	router.GET("/login", e.GetLoginRoute)
+	router.POST("/login", nil)
+	router.POST("/logout", nil)
+	router.GET("/register", nil)
 
-	router.GET("/user/:selector", e.GetHomeRoute)
+	router.GET("/tournament/:selector", nil)
+	router.PUT("/tournament/:selector", nil)
+	router.DELETE("/tournament/:selector", nil)
+	router.POST("/tournament", nil)
+
+	router.GET("/team/:selector", nil)
+	router.PUT("/team/:selector", nil)
+	router.DELETE("/team/:selector", nil)
+	router.POST("/team", nil)
+
+	router.GET("/user/:selector", e.GetUser)
 	router.PUT("/user/:selector", nil)
 	router.DELETE("/user/:selector", nil)
 	router.POST("/user", nil)

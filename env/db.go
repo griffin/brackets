@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-redis/redis"
+	"html/template"
 	"log"
 	"math/rand"
 	"os"
@@ -12,6 +13,14 @@ import (
 
 	_ "github.com/lib/pq" // Postgres driver
 )
+
+// Env represents the environment that is needed to
+// respond to http queries
+type Env struct {
+	Db       datastore
+	Template *template.Template
+	Log      *log.Logger
+}
 
 type db struct {
 	*sql.DB
@@ -91,13 +100,6 @@ func (d *db) GenerateSelector(n int) string {
 	return string(b)
 }
 
-// Env represents the environment that is needed to
-// respond to http queries
-type Env struct {
-	Db  datastore
-	Log *log.Logger
-}
-
 // randInt63 gets a random int
 // Safe for concurrent use.
 func (d *db) randInt63() (n int64) {
@@ -110,7 +112,7 @@ func (d *db) randInt63() (n int64) {
 // New enviornment which allows for database calls
 func New() *Env {
 	logger := log.New(os.Stdout, "log: ", log.Lshortfile)
-	return &Env{nil, logger}
+	return &Env{nil, template.New("web"), logger}
 }
 
 // ConnectDb connects the env to the sql database with the sqlOpt and the redis
@@ -126,21 +128,18 @@ func (env *Env) ConnectDb(sqlOpt SQLOptions, redisOpt RedisOptions) {
 		loggerDb.Fatal(err)
 	}
 
-	/*
-			redisConv := &redis.Options {
-				Addr: fmt.Sprintf("%v:%v", redisOpt.Host, redisOpt.Port),
-				Password: redisOpt.Password,
-				DB: 0,
-			}
+	redisConv := &redis.Options{
+		Addr:     fmt.Sprintf("%v:%v", redisOpt.Host, redisOpt.Port),
+		Password: "",
+		DB:       0,
+	}
 
-			r := redis.NewClient(redisConv)
+	r := redis.NewClient(redisConv)
 
-
-		_, err = r.Ping().Result()
-		if err != nil {
-			loggerDb.Fatal(err)
-		}
-	*/
+	_, err = r.Ping().Result()
+	if err != nil {
+		loggerDb.Fatal(err)
+	}
 
 	loggerDb.Printf("Connected to database")
 	env.Db = &db{d, loggerDb, nil, lk, ra}
