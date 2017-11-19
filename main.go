@@ -53,7 +53,7 @@ func main() {
 	_, err = e.Template.ParseFiles("public/index.html",
 		"public/notfound.html",
 		"public/user/user_index.html",
-		"public/team/team_index",
+		"public/team/team_index.html",
 		"public/tournament/tournament_index.html")
 
 	if err != nil {
@@ -66,6 +66,10 @@ func main() {
 	router.POST("/login", nil)
 	router.POST("/logout", nil)
 	router.GET("/register", nil)
+	router.POST("/register", nil)
+
+	router.GET("/settings", nil)
+	router.POST("/settings", nil)
 
 	router.GET("/tournament/:selector", nil)
 	router.PUT("/tournament/:selector", nil)
