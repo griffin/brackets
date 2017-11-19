@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-func (e *Env) GetUser(c *gin.Context) {
+func (e *Env) GetUserRoute(c *gin.Context) {
 
-	t := e.Template.Lookup("userprofile.html")
+	t := e.Template.Lookup("user_index.html")
 
 	usr, err := e.Db.GetUser(c.Param("selector"))
 	if err != nil {
@@ -19,4 +19,8 @@ func (e *Env) GetUser(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 	t.Execute(c.Writer, usr)
+}
+
+func (e *Env) PostUserRoute(c *gin.Context) {
+
 }

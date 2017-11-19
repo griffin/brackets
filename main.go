@@ -53,6 +53,8 @@ func main() {
 	_, err = e.Template.ParseFiles("public/index.html",
 		"public/notfound.html",
 		"public/user/user_index.html",
+		"public/user/user_login.html",
+		"public/user/user_register.html",
 		"public/team/team_index.html",
 		"public/tournament/tournament_index.html")
 
@@ -60,34 +62,33 @@ func main() {
 		e.Log.Fatal(err)
 	}
 
+	/*
+	 * Register Routes
+	 */
+
 	router.GET("/", e.GetHomeRoute)
 
 	router.GET("/login", e.GetLoginRoute)
-	router.POST("/login", nil)
-	router.POST("/logout", nil)
-	router.GET("/register", nil)
-	router.POST("/register", nil)
+	router.POST("/login", e.PostLoginRoute)
 
-	router.GET("/settings", nil)
-	router.POST("/settings", nil)
+	router.POST("/logout", e.PostLogoutRoute)
 
-	router.GET("/tournament/:selector", nil)
-	router.PUT("/tournament/:selector", nil)
-	router.DELETE("/tournament/:selector", nil)
-	router.POST("/tournament", nil)
+	router.GET("/register", e.RegisterRoute)
+	router.POST("/register", e.PostRegisterRoute)
 
-	router.GET("/team/:selector", nil)
-	router.PUT("/team/:selector", nil)
-	router.DELETE("/team/:selector", nil)
-	router.POST("/team", nil)
+	router.GET("/settings", e.GetSettingsRoute)
+	router.POST("/settings", e.PostSettingsRoute)
 
-	router.GET("/user/:selector", e.GetUser)
-	router.PUT("/user/:selector", nil)
-	router.DELETE("/user/:selector", nil)
-	router.POST("/user", nil)
+	router.GET("/tournament/:selector", e.GetTournamentRoute)
+	router.POST("/tournament", e.PostTournamentRoute)
+
+	router.GET("/team/:selector", e.GetTeamRoute)
+	router.POST("/team", e.PostTeamRoute)
+
+	router.GET("/user/:selector", e.GetUserRoute)
+	router.POST("/user", e.PostUserRoute)
 
 	e.Log.Printf("Server starting...")
 	//e.Log.Fatal(autotls.Run(router, fmt.Sprintf("%v:%v", url, port)))
 	router.Run(fmt.Sprintf("%v:%v", url, port))
-
 }

@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head> 
+        <title>brackets | Register</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="user.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    </head>
+<body> 
+
+<div id="container">
+    <div id="login-form" class="well" align="center">
+        <h2><a href="/">brackets</a> Register</h2>
+        <form action="/register" method="POST">
+            First Name: <input type="text" type="text" name="first_name"><br>
+            Last Name: <input type="text" type="text" name="last_name"><br>
+            Email: <input type="text" type="email" name="email"><br>
+            Password: <input type="text" type="password" name="passwd1"><br>
+            Password (Reenter): <input type="text" type="password" name="passwd2"><br>
+            Date of Birth: <input type="text" type="date" name="dob"><br>
+            Gender:  
+                <select name="gender">
+                    <option value="m">Male</option>
+                    <option value="f">Female</option>
+                    <option value="o">Other</option>
+                    <option value="no">Prefer not to say</option>
+                </select> <br>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+</div> 
+</body>
+
+</html>
