@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-redis/redis"
-	"html/template"
 	"log"
 	"math/rand"
 	"os"
@@ -17,9 +16,8 @@ import (
 // Env represents the environment that is needed to
 // respond to http queries
 type Env struct {
-	Db       datastore
-	Template *template.Template
-	Log      *log.Logger
+	Db  datastore
+	Log *log.Logger
 }
 
 type db struct {
@@ -65,12 +63,12 @@ func (s SQLOptions) String() string {
 
 // Selectable allows a struct to be selectable in a database
 type Selectable struct {
-	selector string
+	sel string
 }
 
 // Selector returns the structs selector
 func (s Selectable) Selector() string {
-	return s.selector
+	return s.sel
 }
 
 const (
@@ -112,7 +110,7 @@ func (d *db) randInt63() (n int64) {
 // New enviornment which allows for database calls
 func New() *Env {
 	logger := log.New(os.Stdout, "log: ", log.Lshortfile)
-	return &Env{nil, template.New("web"), logger}
+	return &Env{nil, logger}
 }
 
 // ConnectDb connects the env to the sql database with the sqlOpt and the redis

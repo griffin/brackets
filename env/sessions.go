@@ -38,7 +38,7 @@ func (d *db) CreateSession(email, password string) (*User, string, error) {
 
 	//TODO check login times to prevent spam
 
-	err := d.DB.QueryRow(validateUser, email).Scan(&usr.ID, &usr.selector, &validator, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth)
+	err := d.DB.QueryRow(validateUser, email).Scan(&usr.ID, &usr.sel, &validator, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth)
 	if err != nil {
 		return nil, "", errors.New("couldn't find user")
 	}
@@ -61,7 +61,7 @@ func (d *db) insertSession(user User) string {
 
 	hashValidator := sha256.Sum256([]byte(validator))
 
-	_, err := d.DB.Exec(createSession, string(hashValidator[:]), selector, user.ID, exp)
+	_, err := d.DB.Exec(createSession, hashValidator, selector, user.ID, exp)
 	if err != nil {
 		d.Panicf("Could not insert session: %v", err)
 	}

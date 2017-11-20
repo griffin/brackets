@@ -32,8 +32,8 @@ type Game struct {
 }
 
 func (d *db) CreateGame(game Game) (*Game, error) {
-	game.selector = d.GenerateSelector(selectorLen)
-	res, err := d.DB.Exec(createGame, game.selector, game.AwayTeam.ID, game.HomeTeam.ID, game.Time)
+	game.sel = d.GenerateSelector(selectorLen)
+	res, err := d.DB.Exec(createGame, game.sel, game.AwayTeam.ID, game.HomeTeam.ID, game.Time)
 	if err != nil {
 		return nil, errors.New("couldn't create game")
 	}

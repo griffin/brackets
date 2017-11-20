@@ -44,7 +44,7 @@ type userDatastore interface {
 
 func (d *db) CreateUser(usr User, password string) (*User, error) {
 	validator, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	usr.selector = d.GenerateSelector(selectorLen)
+	usr.sel = d.GenerateSelector(selectorLen)
 	if err != nil {
 		return nil, err
 	}

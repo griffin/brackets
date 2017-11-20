@@ -55,9 +55,9 @@ func main() {
 		"age": env.Age,
 	}
 
-	e.Template.Funcs(fm)
+	router.SetFuncMap(fm)
 
-	_, err = e.Template.ParseFiles("public/index.html",
+	router.LoadHTMLFiles("public/index.html",
 		"public/notfound.html",
 		"public/user/user_index.html",
 		"public/user/user_login.html",
@@ -65,13 +65,11 @@ func main() {
 		"public/team/team_index.html",
 		"public/tournament/tournament_index.html")
 
-	if err != nil {
-		e.Log.Fatal(err)
-	}
-
 	/*
 	 * Register Routes
 	 */
+
+	router.Static("/assets", "public/assets")
 
 	router.GET("/", e.GetHomeRoute)
 

@@ -66,7 +66,7 @@ func (d *db) GetTournament(selector string) (*Tournament, error) {
 	var tour Tournament
 
 	tx, err := d.DB.Begin()
-	tx.QueryRow(getTournament, selector).Scan(tour.ID, tour.selector, tour.Name)
+	tx.QueryRow(getTournament, selector).Scan(tour.ID, tour.sel, tour.Name)
 	rows, err := tx.Query(selectOrganizers, tour.ID)
 	err = tx.Commit()
 	if err != nil {
@@ -75,7 +75,7 @@ func (d *db) GetTournament(selector string) (*Tournament, error) {
 
 	for rows.Next() {
 		org := &Organizer{}
-		rows.Scan(org.selector, org.ID, org.FirstName, org.LastName, org.Gender, org.DateOfBirth, org.Email, org.Rank)
+		rows.Scan(org.sel, org.ID, org.FirstName, org.LastName, org.Gender, org.DateOfBirth, org.Email, org.Rank)
 		tour.Organizers = append(tour.Organizers, org)
 	}
 

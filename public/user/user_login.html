@@ -4,7 +4,7 @@
         <title>brackets | Login</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="user.css">
+        <link rel="stylesheet" href="/assets/css/user.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     </head>
 <body> 
@@ -12,9 +12,12 @@
 <div id="container">
     <div id="login-form" class="well center">
         <h2 align="center"><a href="/">brackets</a> Login</h2>
-        <form action="/user" method="POST">
-            Email: <input class="form-control" type="text" type="email" name="email"><br>
-            Password: <input class="form-control" type="text" type="password" name="passwd"><br>
+        {{if .Message}}
+        <div class="alert alert-{{.Type}}" role="alert">{{.Message}}</div>
+        {{end}}
+        <form action="/login" method="POST">
+            Email: <input class="form-control" type="email" name="email"><br>
+            Password: <input class="form-control" type="password" name="passwd"><br>
             <input type="submit" align="center" class="btn btn-primary" value="Submit">
         </form>
     </div>

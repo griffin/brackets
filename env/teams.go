@@ -6,7 +6,7 @@ import (
 
 const (
 	createTeam = "INSERT INTO teams (selector, name, tournament_id) VALUES ($1, $2, $3)"
-	getTeam = "SELECT id, tournamentID, name FROM teams WHERE selector=$1"
+	getTeam    = "SELECT id, tournamentID, name FROM teams WHERE selector=$1"
 	updateTeam = "UPDATE teams SET name=$1 WHERE team_id=$2"
 	deleteTeam = "DELETE FROM teams WHERE team_id=$1"
 
@@ -15,17 +15,17 @@ const (
 	deletePlayer = "DELETE FROM players WHERE team_id=$2 AND user_id=$3" //FIX
 	selectPlayer = "SELECT rank WHERE team_id=$2 AND user_id=$3"
 
-	selectPlayers = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, players.rank FROM users JOIN players WHERE players.team_id=$1"
+	selectPlayers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, players.rank FROM users JOIN players WHERE players.team_id=$1"
 	deleteAllPlayers = "DELETE FROM players WHERE team_id=$1"
 )
 
 type Rank int
 
 const (
-	Delete Rank = -1
-	Owner Rank = 0
+	Delete    Rank = -1
+	Owner     Rank = 0
 	Moderator Rank = 1
-	Member Rank = 3
+	Member    Rank = 3
 )
 
 type teamDatastore interface {
@@ -50,10 +50,10 @@ type Player struct {
 	Rank
 }
 
-func (d *db) CreateTeam(team Team) (*Team, error){
+func (d *db) CreateTeam(team Team) (*Team, error) {
 	selector := d.GenerateSelector(selectorLen)
 	tx, err := d.DB.Begin()
-	tx.Exec(createTeam, selector, team.Name, team.tournamentID);
+	tx.Exec(createTeam, selector, team.Name, team.tournamentID)
 	for _, e := range team.Players {
 		tx.Exec(insertPlayer, e.ID, team.ID, e.Rank)
 	}
@@ -65,15 +65,15 @@ func (d *db) CreateTeam(team Team) (*Team, error){
 	return &team, nil
 }
 
-func (d *db) GetTeam(selector string) (*Team, error){
+func (d *db) GetTeam(selector string) (*Team, error) {
 	var team Team
-	team.selector = selector
-	
+	team.sel = selector
+
 	tx, err := d.DB.Begin()
 	if err != nil {
 		return nil, errors.New("Couldn't get team")
 	}
-	
+
 	tx.QueryRow(getTeam, team.Selector()).Scan(team.ID, team.tournamentID, team.Name)
 	rows, err := tx.Query(selectPlayers, team.ID)
 
@@ -81,19 +81,19 @@ func (d *db) GetTeam(selector string) (*Team, error){
 	if err != nil {
 		return nil, errors.New("failed to get team")
 	}
-	
+
 	for rows.Next() {
 		pl := &Player{}
-		rows.Scan(pl.selector, pl.ID, pl.FirstName, pl.LastName, pl.Gender, pl.DateOfBirth, pl.Email, pl.Rank)
+		rows.Scan(pl.sel, pl.ID, pl.FirstName, pl.LastName, pl.Gender, pl.DateOfBirth, pl.Email, pl.Rank)
 		team.Players = append(team.Players, pl)
 	}
-	
+
 	return &team, nil
 }
 
-func (d *db) UpdateTeam(team Team) error{
+func (d *db) UpdateTeam(team Team) error {
 	tx, err := d.DB.Begin()
-	tx.Exec(updateTeam, team.Name, team.Selector());
+	tx.Exec(updateTeam, team.Name, team.Selector())
 	for _, e := range team.Players {
 		if e.Rank > 0 { // INSERT if new
 			tx.Exec(updatePlayer, e.Rank, team.ID, e.ID)
