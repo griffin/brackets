@@ -25,23 +25,24 @@ func (e *Env) GetLoginRoute(c *gin.Context) {
 func (e *Env) PostLoginRoute(c *gin.Context) {
 	email, e1 := c.GetPostForm("email")
 	password, e2 := c.GetPostForm("passwd")
-	e.Log.Println("here0")
-	if !e1 || !e2 {
+
+	if !e1 || !e2 || len(email) == 0 || len(password) == 0 {
 		c.HTML(http.StatusOK, "user_login.html", gin.H{
-			"error": noUsrOrPsw,
-		})
-		return
-	}
-	e.Log.Println("here1")
-	_, token, err := e.Db.CreateSession(email, password)
-	if err != nil {
-		c.HTML(http.StatusOK, "user_login.html", gin.H{
-			"error": loginFailed,
+			"message": noUsrOrPsw,
+			"type": "danger",
 		})
 		return
 	}
 
-	e.Log.Println("here2")
+	_, token, err := e.Db.CreateSession(email, password)
+	if err != nil {
+		c.HTML(http.StatusOK, "user_login.html", gin.H{
+			"message": loginFailed,
+			"type": "danger",
+		})
+		return
+	}
+
 	c.SetCookie("session", token, -1, "", "", false, false)
 	c.Redirect(302, "/")
 }

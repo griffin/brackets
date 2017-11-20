@@ -12,8 +12,8 @@
 <div id="container">
     <div id="login-form" class="well center">
         <h2 align="center"><a href="/">brackets</a> Login</h2>
-        {{if .Message}}
-        <div class="alert alert-{{.Type}}" role="alert">{{.Message}}</div>
+        {{if .message}}
+        <div class="alert alert-{{.type}}" role="alert">{{.message}}</div>
         {{end}}
         <form action="/login" method="POST">
             Email: <input class="form-control" type="email" name="email"><br>
