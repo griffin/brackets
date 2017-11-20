@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/json"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/go-redis/redis"
@@ -60,8 +61,9 @@ func (d *db) insertSession(user User) string {
 	exp := time.Now().Add(time.Hour * 2).UnixNano() //TODO
 
 	hashValidator := sha256.Sum256([]byte(validator))
+	hashValStr := base64.StdEncoding.EncodeToString(hashValidator[:])
 
-	_, err := d.DB.Exec(createSession, hashValidator, selector, user.ID, exp)
+	_, err := d.DB.Exec(createSession, hashValStr, selector, user.ID, exp)
 	if err != nil {
 		d.Panicf("Could not insert session: %v", err)
 	}
@@ -137,7 +139,8 @@ query: // Skip to the SQL query
 
 check:
 
-	if bytes.Equal(validator[:], []byte(valQuery)) { // TODO also check exp
+	q, err := base64.StdEncoding.DecodeString(valQuery)
+	if bytes.Equal(validator[:], q) { // TODO also check exp
 		return nil, errors.New("validator != valQ")
 	}
 
