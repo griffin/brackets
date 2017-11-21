@@ -23,7 +23,7 @@ const (
 )
 
 type User struct {
-	Selectable
+	Selector
 
 	ID uint
 
@@ -49,7 +49,7 @@ func (d *db) CreateUser(usr User, password string) (*User, error) {
 		return nil, err
 	}
 
-	res, err := d.DB.Exec(createUser, usr.Selector(), string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
+	res, err := d.DB.Exec(createUser, usr.Selector.String(), string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
 	if err != nil {
 		return nil, err
 	}

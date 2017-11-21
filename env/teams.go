@@ -22,24 +22,22 @@ const (
 type Rank int
 
 const (
-	Delete    Rank = -1
-	Owner     Rank = 0
-	Moderator Rank = 1
-	Member    Rank = 3
+	Member  Rank = 0
+	Manager Rank = 1
 )
 
 type teamDatastore interface {
 	CreateTeam(team Team) (*Team, error)
-	GetTeam(selector string) (*Team, error)
+	GetTeam(selector string, full bool) (*Team, error)
 	UpdateTeam(team Team) error
 	DeleteTeam(selector Team) error
 }
 
 type Team struct {
-	Selectable
+	Selector
 
 	ID           uint
-	tournamentID uint
+	TournamentID uint
 
 	Name    string
 	Players []*Player
@@ -52,8 +50,9 @@ type Player struct {
 
 func (d *db) CreateTeam(team Team) (*Team, error) {
 	selector := d.GenerateSelector(selectorLen)
+	team.sel = selector
 	tx, err := d.DB.Begin()
-	tx.Exec(createTeam, selector, team.Name, team.tournamentID)
+	tx.Exec(createTeam, selector, team.Name, team.TournamentID)
 	for _, e := range team.Players {
 		tx.Exec(insertPlayer, e.ID, team.ID, e.Rank)
 	}
@@ -65,27 +64,22 @@ func (d *db) CreateTeam(team Team) (*Team, error) {
 	return &team, nil
 }
 
-func (d *db) GetTeam(selector string) (*Team, error) {
+func (d *db) GetTeam(selector string, full bool) (*Team, error) {
 	var team Team
 	team.sel = selector
 
-	tx, err := d.DB.Begin()
-	if err != nil {
-		return nil, errors.New("Couldn't get team")
-	}
-
-	tx.QueryRow(getTeam, team.Selector()).Scan(team.ID, team.tournamentID, team.Name)
-	rows, err := tx.Query(selectPlayers, team.ID)
-
-	err = tx.Commit()
+	err := d.QueryRow(getTeam, team.Selector.String()).Scan(team.ID, team.TournamentID, team.Name)
 	if err != nil {
 		return nil, errors.New("failed to get team")
 	}
 
-	for rows.Next() {
-		pl := &Player{}
-		rows.Scan(pl.sel, pl.ID, pl.FirstName, pl.LastName, pl.Gender, pl.DateOfBirth, pl.Email, pl.Rank)
-		team.Players = append(team.Players, pl)
+	if full {
+		rows, _ := d.Query(selectPlayers, team.ID)
+		for rows.Next() {
+			var pl Player
+			rows.Scan(pl.sel, pl.ID, pl.FirstName, pl.LastName, pl.Gender, pl.DateOfBirth, pl.Email, pl.Rank)
+			team.Players = append(team.Players, &pl)
+		}
 	}
 
 	return &team, nil
@@ -93,7 +87,7 @@ func (d *db) GetTeam(selector string) (*Team, error) {
 
 func (d *db) UpdateTeam(team Team) error {
 	tx, err := d.DB.Begin()
-	tx.Exec(updateTeam, team.Name, team.Selector())
+	tx.Exec(updateTeam, team.Name, team.Selector.String())
 	for _, e := range team.Players {
 		if e.Rank > 0 { // INSERT if new
 			tx.Exec(updatePlayer, e.Rank, team.ID, e.ID)

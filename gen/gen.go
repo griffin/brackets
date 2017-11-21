@@ -6,6 +6,7 @@ import (
 	"github.com/ggpd/brackets/env"
 	"github.com/spf13/viper"
 	"io"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -53,7 +54,7 @@ func main() {
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
-	e.GenUsers()
+	e.GenTeams()
 
 }
 
@@ -113,6 +114,29 @@ func (e *Env) GenTour() {
 		}
 
 		_, err = e.Db.CreateTournament(tour)
+		fmt.Println(err)
+	}
+}
+
+func (e *Env) GenTeams() {
+
+	file, _ := os.Open("random_team.csv")
+	r := csv.NewReader(file)
+
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+
+		fmt.Println(record)
+
+		t := env.Team{
+			Name:         record[0],
+			TournamentID: uint(rand.Intn(10) + 1),
+		}
+
+		_, err = e.Db.CreateTeam(t)
 		fmt.Println(err)
 	}
 }

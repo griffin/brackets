@@ -22,7 +22,7 @@ type gameDatastore interface {
 }
 
 type Game struct {
-	Selectable
+	Selector
 
 	ID uint
 

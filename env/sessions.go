@@ -3,8 +3,8 @@ package env
 import (
 	"bytes"
 	"crypto/sha256"
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/go-redis/redis"
@@ -58,10 +58,11 @@ func (d *db) CreateSession(email, password string) (*User, string, error) {
 func (d *db) insertSession(user User) string {
 	validator := d.GenerateSelector(validatorLen)
 	selector := d.GenerateSelector(selectorLen)
-	exp := time.Now().Add(time.Hour * 2).UnixNano() //TODO
+	exp := time.Now().Add(time.Hour * 2).Unix() //TODO
 
 	hashValidator := sha256.Sum256([]byte(validator))
 	hashValStr := base64.StdEncoding.EncodeToString(hashValidator[:])
+	d.Logger.Printf(hashValStr)
 
 	_, err := d.DB.Exec(createSession, hashValStr, selector, user.ID, exp)
 	if err != nil {

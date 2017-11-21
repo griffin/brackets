@@ -5,32 +5,35 @@ import (
 )
 
 const (
-	createTournament = "INSERT INTO tournaments (id, selector, name) VALUES ($1, $2)"
-	getTournament    = "SELECT selector, name FROM tournament WHERE selector=$1"
+	createTournament = "INSERT INTO tournaments (selector, name) VALUES ($1, $2)"
+	getTournament    = "SELECT id, name FROM tournaments WHERE selector=$1"
 	updateTournament = "UPDATE tournaments SET name=$1 WHERE id=$2"
 	deleteTournament = "DELETE FROM tournaments WHERE id=$1"
 
 	insertOrganizer = "INSERT INTO organizers (user_id, tournament_id, rank) VALUES ($1, $2, $3)"
 	deleteOrganizer = "DELETE FROM organizers WHERE tournament_id=$2 AND user_id=$3" //FIX
-	selectOrganizer = "SELECT rank WHERE tournament_id=$2 AND user_id=$3"
+	selectOrganizer = "SELECT rank FROM organizers WHERE tournament_id=$2 AND user_id=$3"
 	updateOrganizer = "UPDATE organizers SET rank=$1 WHERE tournament_id=$2 AND user_id=$3"
 
 	selectOrganizers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, organizers.rank FROM users JOIN organizers WHERE organizers.tournament_id=$1"
 	deleteAllOrganizers = "DELETE FROM organizers WHERE tournament_id=$1"
+
+	selectAllTeams = "SELECT id, selector, name FROM teams WHERE tournament_id=$1"
 )
 
 type tournamentDatastore interface {
 	CreateTournament(tour Tournament) (*Tournament, error)
-	GetTournament(selector string) (*Tournament, error)
+	GetTournament(selector string, full bool) (*Tournament, error)
 	UpdateTournament(tour Tournament) error
 	DeleteTournament(tour Tournament) error
 }
 
 type Tournament struct {
-	Selectable
+	Selector
 	ID uint
 
 	Name       string
+	Owner      *Organizer
 	Organizers []*Organizer
 	Teams      []*Team
 }
@@ -40,14 +43,12 @@ type Organizer struct {
 	Rank
 }
 
-func (org *Organizer) Delete() {
-	org.Rank = Delete // TODO
-}
-
 // CreateTournament creates a new tournament using the struct provided
 // and returns a pointer to a new struct
 func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
 	selector := d.GenerateSelector(selectorLen)
+	tour.sel = selector
+
 	tx, err := d.DB.Begin()
 	tx.Exec(createTournament, selector, tour.Name)
 	for _, e := range tour.Organizers {
@@ -55,28 +56,43 @@ func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
 	}
 	err = tx.Commit()
 	if err != nil {
-		return nil, errors.New("failed to creat tournament")
+		d.Logger.Panicln(err)
+		return nil, errors.New("failed to create tournament")
 	}
 
 	return &tour, nil
 }
 
-func (d *db) GetTournament(selector string) (*Tournament, error) {
-
+func (d *db) GetTournament(selector string, full bool) (*Tournament, error) {
 	var tour Tournament
+	tour.sel = selector
 
-	tx, err := d.DB.Begin()
-	tx.QueryRow(getTournament, selector).Scan(tour.ID, tour.sel, tour.Name)
-	rows, err := tx.Query(selectOrganizers, tour.ID)
-	err = tx.Commit()
+	err := d.QueryRow(getTournament, selector).Scan(&tour.ID, &tour.Name)
 	if err != nil {
+		d.Logger.Println(err)
 		return nil, errors.New("failed to get tournament")
 	}
 
-	for rows.Next() {
-		org := &Organizer{}
-		rows.Scan(org.sel, org.ID, org.FirstName, org.LastName, org.Gender, org.DateOfBirth, org.Email, org.Rank)
-		tour.Organizers = append(tour.Organizers, org)
+	if full {
+		rows, err := d.Query(selectOrganizers, tour.ID)
+		if err == nil {
+			for rows.Next() {
+				var org Organizer
+				rows.Scan(&org.sel, &org.ID, &org.FirstName, &org.LastName, &org.Gender, &org.DateOfBirth, &org.Email, &org.Rank)
+				tour.Organizers = append(tour.Organizers, &org)
+			}
+		}
+
+		rows, err = d.Query(selectAllTeams, tour.ID)
+		if err == nil {
+			for rows.Next() {
+				var team Team
+				team.TournamentID = tour.ID
+				rows.Scan(&team.ID, &team.sel, &team.Name)
+				tour.Teams = append(tour.Teams, &team)
+			}
+		}
+
 	}
 
 	return &tour, nil

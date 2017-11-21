@@ -62,12 +62,12 @@ func (s SQLOptions) String() string {
 }
 
 // Selectable allows a struct to be selectable in a database
-type Selectable struct {
+type Selector struct {
 	sel string
 }
 
 // Selector returns the structs selector
-func (s Selectable) Selector() string {
+func (s Selector) String() string {
 	return s.sel
 }
 
