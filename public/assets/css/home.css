@@ -42,12 +42,11 @@ nav
 object 
 {
     overflow: hidden; 
-    position: absolute; 
-    height: 100%; 
+    position: relative; 
     width: 100%; 
-
+    height: 1050px; 
 }
-.tabStuff
+.tabstuff
 {
-    max-height: 100%; 
+    position: relative;  
 }

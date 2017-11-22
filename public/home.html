@@ -42,7 +42,7 @@
         </div>
         </nav> 
 
-        <center><div id="Welcome"> <h2> {{ if .ID}} Welcome {{.FirstName}}</h2> </div></center>
+        <center><div id="Welcome"> <h2> {{ if .ID}} Welcome {{.FirstName}} {{end}}</h2> </div></center>
         <div id="break"> 
             <div class="container-fluid"> 
                 <div class="circle"> <h5>Wins</h5> <h1>5</h1> </div>
@@ -62,21 +62,23 @@
 
             <div class="tab-content container-fluid"> 
                 <div id="stats" class="tab-pane fade in active">
-                    <h3> My Team </h3>
-                    <object type ="text/html" target="_parent" data="team/team_index.html"> </object>
+                    <object type ="text/html" target="_parent" data="teamtable.html"> </object>
                     
                 </div>
                 <div id="MyGames" class="tab-pane fade">
                     <h3> My Games </h3>
+                    <!-- Query of upcoming games all in a tournament or season-->
                     <p>
                         Add some more content here later 
                     </p>
                 </div>
                 <div id="MyTournaments" class="tab-pane fade"> 
+                    <!-- All Tournaments for the year / Season -->
                     <h3> My Tournaments </h3>
                 </div>
                 <div id="MyProfile" class="tab-pane fade">
                     <h3> My Profile </h3>
+                    <!-- fourm to change password, email, etc...-->
                     <p>
                         some form to edit the profile here maybe who knows 
                     </p>
