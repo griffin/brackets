@@ -13,7 +13,8 @@ const (
 	updateUser = "UPDATE users SET first_name=$1, last_name=$2, gender=$3, dob=$4, email=$5 WHERE id=$6"
 	deleteUser = "DELETE FROM users WHERE id=$1"
 
-	selectUsers = "SELECT id, selector, first_name, last_name, gender, dob FROM users ORDER BY id DESC LIMIT $1 OFFSET $2"
+	selectUsers  = "SELECT id, selector, first_name, last_name, gender, dob FROM users ORDER BY id ASC LIMIT $1 OFFSET $2"
+	getUserCount = "SELECT COUNT(*) FROM users"
 )
 
 type Gender int8
@@ -44,7 +45,7 @@ type userDatastore interface {
 	UpdateUser(usr User) error
 	DeleteUser(usr User) error
 
-	GetUsers(amount, page int) ([]*User, error)
+	GetUsers(amount, page int) ([]*User, int, error)
 }
 
 func (d *db) CreateUser(usr User, password string) (*User, error) {
@@ -97,10 +98,10 @@ func (d *db) DeleteUser(usr User) error {
 	return nil
 }
 
-func (d *db) GetUsers(amount, page int) ([]*User, error) {
+func (d *db) GetUsers(amount, page int) ([]*User, int, error) {
 	rows, err := d.DB.Query(selectUsers, amount, amount*page)
 	if err != nil {
-		return nil, errors.New("could not get next page")
+		return nil, 0, errors.New("could not get next page")
 	}
 	var rt []*User
 
@@ -110,7 +111,10 @@ func (d *db) GetUsers(amount, page int) ([]*User, error) {
 		rt = append(rt, &usr)
 	}
 
-	return rt, nil
+	count := 0
+	err = d.DB.QueryRow(getUserCount).Scan(&count)
+
+	return rt, count - (amount * (page + 1)), nil
 }
 
 func (g Gender) String() string {

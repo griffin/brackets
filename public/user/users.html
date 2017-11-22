@@ -40,35 +40,41 @@
 
 
   <div id="container">
-    {{if .tournaments}}
+
+    {{if .users}}
     <table class="table table-striped">
       <thead>
         <tr>
           <th scope="col">Name</th>
+          <th scope="col">Gender</th>
+          <th scope="col">Age</th>
         </tr>
       </thead>
       <tbody>
-        {{range .tournaments}}
+        {{range .users}}
         <tr>
-          <td><a href="/user/{{.Selector.String}}">{{.Name}}</a></td>
+          <td><a href="/user/{{.Selector.String}}">{{.FirstName}} {{.LastName}}</a></td>
+          <td>{{.Gender.String}}</td>
+          <td>{{age .DateOfBirth}}</td>
         </tr>
         {{end}}
       </tbody>
     </table>
     {{else}}
-    <h2>No Teams.</h2>
+    <h2>No Players.</h2>
     {{end}} 
-
-
-  <div >
-    <p>
-        <a href="/tournament?page={{.PageNumber - 1}}&results={{.Results}}">Last</a> 
-        {{.PageNumber}} 
-        {{if .Next}}
-        <a href="/tournament?page={{.PageNumber + 1}}&results={{.Results}}">Next</a>
-        {{end}}
-    </p>
-  </div>
+    
+    <div>
+            <p>
+              {{if gt .pageNumber 0}}
+                <a href="/user?page={{.prevPageNumber}}&results={{.results}}">Last</a> 
+                {{end}}
+                {{.pageNumber}} 
+                {{if .next}}
+                <a href="/user?page={{.nextPageNumber}}&results={{.results}}">Next</a>
+                {{end}}
+            </p>
+          </div>
 
   </div>
 </body>

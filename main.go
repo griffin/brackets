@@ -64,8 +64,10 @@ func main() {
 		"public/user/user_index.html",
 		"public/user/user_login.html",
 		"public/user/user_register.html",
+		"public/user/users.html",
 		"public/team/team_index.html",
-		"public/tournament/tournament_index.html")
+		"public/tournament/tournament_index.html",
+		"public/tournament/tournaments.html")
 
 	/*
 	 * Register Routes
