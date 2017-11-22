@@ -1,3 +1,4 @@
+<!doctype html> 
 <html>
         <head> 
             <title> brackets </title>
@@ -5,68 +6,82 @@
             
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-            <link rel="stylesheet" href="home.css"> 
+            <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
             
             <!-- jQuery library -->
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-            <script src="home.js"></script>
+            <script src="assets/javascript/home.js"></script>
             <!-- Latest compiled JavaScript -->
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         </head>
-<body> 
 
+        <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#"> Brackets </a>
+                </div>
+
+             <ul class="nav navbar-nav">
+                <li class = "active"> <a href="#"> My Profile </a> </li>
+                <li> <a href="#"> Tournaments </a> </li>
+                <li> <a href="#"> Teams </a></li> 
+            </ul> 
+
+            <ul class="nav navbar-nav navbar-right">
+                    
+            {{ if .ID }}
+                 <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.FirstName}} </a> </li> 
+            {{else}}
+
+                        <li> <a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
+                        <li> <a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
+            {{end}}
+        </ul>
         
-    <div class="wrapper">  
+        </div>
+        </nav> 
 
-        <nav id="sidebar"> 
-            <div class="nav_header">
-                 <h3> Navigation</h3> 
-            </div>
-            <div class="nav_links"> 
-                <ul> 
-                    <li> <a href="">Home</a> </li>
-                    <li><a href="#"> My Stuff </a> </li>
-                    <li><a href="#"> Teams </a> </li> 
-                     <li><a href="#"> Ranks</a> </li>
-                </ul>
-            </div> 
-         </nav>
-
-
-    <div id="content">
-            <div class="jumbotron"> 
-                    <h1> Brackets </h1> 
+        <center><div id="Welcome"> <h2> {{ if .ID}} Welcome {{.FirstName}}</h2> </div></center>
+        <div id="break"> 
+            <div class="container-fluid"> 
+                <div class="circle"> <h5>Wins</h5> <h1>5</h1> </div>
+                <!-- This query would be adding up all the games whos winner = the players team name -->
+                <div class="circle"><h5>Loses</h5><h1>5</h1></div>
+                <div class="circle"><h5>More Games</h5><h1>5</h1></div>  
             </div>
 
+        </div>
+        <div id="content"> 
+            <ul class="nav nav-tabs">
+                <li class="active"> <a data-toggle="tab" href="#stats"> My Team</a> </li>
+                <li> <a data-toggle="tab" href="#MyGames"> My Games</a></li>
+                <li> <a data-toggle="tab" href="#MyTournaments"> My Tournaments</a></li>
+                <li> <a data-toggle="tab" href="#MyProfile"> My Profile</a></li>
+            </ul>
 
-            <div class="greating"> 
-                <h3>Hello {{if .FirstName}} ,{{.FirstName}} {{else}} ! {{end}} </h3> 
-            </div>
-
-            {{if .ID}}
-            <div class="my_stuff">
-                <ul> 
-                    <li> Team </li> 
-                    <li>My Games </li>
-                    <li> Tournaments </li>
-                    <li> My Profile </li> 
-                </ul>
-
-            {{end}}    
-
-
-                 <div class="main_stuff"> 
-                   <div class="yeild"> 
-                    <!-- yeild will be replaced with content from other html files -->
-                    </div> 
+            <div class="tab-content container-fluid"> 
+                <div id="stats" class="tab-pane fade in active">
+                    <h3> My Team </h3>
+                    <object type ="text/html" target="_parent" data="team/team_index.html"> </object>
+                    
+                </div>
+                <div id="MyGames" class="tab-pane fade">
+                    <h3> My Games </h3>
+                    <p>
+                        Add some more content here later 
+                    </p>
+                </div>
+                <div id="MyTournaments" class="tab-pane fade"> 
+                    <h3> My Tournaments </h3>
+                </div>
+                <div id="MyProfile" class="tab-pane fade">
+                    <h3> My Profile </h3>
+                    <p>
+                        some form to edit the profile here maybe who knows 
+                    </p>
                 </div>
             </div>
-
-           
-
-
-    </div> 
-</body>
-
-</div> 
+        </div>
+        </body>
 </html>
