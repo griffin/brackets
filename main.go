@@ -2,12 +2,14 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/ggpd/brackets/env"
 	"github.com/ggpd/brackets/routes"
 	//"github.com/gin-gonic/autotls"
+	"html/template"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"html/template"
 )
 
 func main() {
@@ -91,7 +93,7 @@ func main() {
 	router.POST("/team", e.PostTeamRoute)
 
 	router.GET("/user/:selector", e.GetUserRoute)
-	router.POST("/user", e.PostUserRoute)
+	router.GET("/user", e.GetUsersRoute)
 
 	e.Log.Printf("Server starting...")
 	//e.Log.Fatal(autotls.Run(router, fmt.Sprintf("%v:%v", url, port)))

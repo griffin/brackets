@@ -6,7 +6,7 @@ import (
 
 const (
 	createTeam = "INSERT INTO teams (selector, name, tournament_id) VALUES ($1, $2, $3)"
-	getTeam    = "SELECT id, tournamentID, name FROM teams WHERE selector=$1"
+	getTeam    = "SELECT id, tournament_id, name FROM teams WHERE selector=$1"
 	updateTeam = "UPDATE teams SET name=$1 WHERE team_id=$2"
 	deleteTeam = "DELETE FROM teams WHERE team_id=$1"
 
@@ -15,7 +15,7 @@ const (
 	deletePlayer = "DELETE FROM players WHERE team_id=$2 AND user_id=$3" //FIX
 	selectPlayer = "SELECT rank WHERE team_id=$2 AND user_id=$3"
 
-	selectPlayers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, players.rank FROM users JOIN players WHERE players.team_id=$1"
+	selectPlayers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, players.rank FROM users JOIN players ON players.user_id=users.id WHERE players.team_id=$1"
 	deleteAllPlayers = "DELETE FROM players WHERE team_id=$1"
 )
 
@@ -26,11 +26,22 @@ const (
 	Manager Rank = 1
 )
 
+func (r Rank) String() string {
+	switch r {
+	case Member:
+		return "Member"
+	case Manager:
+		return "Manager"
+	}
+	return ""
+}
+
 type teamDatastore interface {
 	CreateTeam(team Team) (*Team, error)
 	GetTeam(selector string, full bool) (*Team, error)
 	UpdateTeam(team Team) error
 	DeleteTeam(selector Team) error
+	//AddPlayer(player Player, i int, id int)
 }
 
 type Team struct {
@@ -44,7 +55,7 @@ type Team struct {
 }
 
 type Player struct {
-	*User
+	User
 	Rank
 }
 
@@ -68,17 +79,20 @@ func (d *db) GetTeam(selector string, full bool) (*Team, error) {
 	var team Team
 	team.sel = selector
 
-	err := d.QueryRow(getTeam, team.Selector.String()).Scan(team.ID, team.TournamentID, team.Name)
+	err := d.QueryRow(getTeam, team.Selector.String()).Scan(&team.ID, &team.TournamentID, &team.Name)
 	if err != nil {
+		d.Logger.Println(err)
 		return nil, errors.New("failed to get team")
 	}
 
 	if full {
-		rows, _ := d.Query(selectPlayers, team.ID)
-		for rows.Next() {
-			var pl Player
-			rows.Scan(pl.sel, pl.ID, pl.FirstName, pl.LastName, pl.Gender, pl.DateOfBirth, pl.Email, pl.Rank)
-			team.Players = append(team.Players, &pl)
+		rows, err := d.Query(selectPlayers, team.ID)
+		if err == nil {
+			for rows.Next() {
+				var pl Player
+				rows.Scan(&pl.sel, &pl.ID, &pl.FirstName, &pl.LastName, &pl.Gender, &pl.DateOfBirth, &pl.Email, &pl.Rank)
+				team.Players = append(team.Players, &pl)
+			}
 		}
 	}
 
@@ -114,3 +128,10 @@ func (d *db) DeleteTeam(team Team) error {
 
 	return nil
 }
+
+/*
+func (d *db) AddPlayer(player Player, i int, id int) {
+	_, err := d.DB.Exec(insertPlayer, id, i, player.Rank)
+	d.Logger.Println(err)
+}
+*/

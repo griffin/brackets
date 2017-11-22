@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>brackets | {{.Name}}</title>
+  <title>brackets | {{.team.Name}}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -40,35 +40,34 @@
 
 
   <div id="container">
-    <h1>{{.Name}}</h1>
+    <h1>{{.team.Name}}</h1>
 
-    {{if .Players}}
-    <table class="table">
+    {{if .team.Players}}
+    <table class="table table-striped">
       <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Age</th>
           <th scope="col">Gender</th>
+          <th scope="col">Age</th>
           <th scope="col">Rank</th>
         </tr>
       </thead>
       <tbody>
-        {{range .Players}}
+        {{range .team.Players}}
         <tr>
-          <th scope="row">1</th>
-          <td><a href="/user/{{.Selector.String}}">{{.Name}}</a></td>
+          <td><a href="/user/{{.Selector.String}}">{{.FirstName}} {{.LastName}}</a></td>
           <td>{{.Gender.String}}</td>
           <td>{{age .DateOfBirth}}</td>
-          <td>{{.Rank}}</td>
+          <td>{{.Rank.String}}</td>
         </tr>
         {{end}}
       </tbody>
     </table>
     {{else}}
-    <h2>No Games.</h2>
+    <h2>No Players.</h2>
     {{end}} 
     
-    {{if .Games}}
+    {{if .games}}
     <table class="table">
       <thead>
         <tr>
@@ -79,7 +78,7 @@
         </tr>
       </thead>
       <tbody>
-        {{range .Games}}
+        {{range .games}}
         <tr>
           <th scope="row">1</th>
           <td>{{.Name}}</td>

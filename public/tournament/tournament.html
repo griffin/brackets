@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>brackets | {{.Name}}</title>
+  <title>brackets</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -40,50 +40,35 @@
 
 
   <div id="container">
-    <h1>{{.Name}}</h1>
-    {{if .Owner}}
-    <h2><a href="/user/{{.Owner.Selector.String}}">{{.Owner.Name}}</a></h2>
-    {{end}}
-    {{if .Organizers}}
+    {{if .tournaments}}
     <table class="table table-striped">
       <thead>
         <tr>
           <th scope="col">Name</th>
-          <th scope="col">Rank</th>
         </tr>
       </thead>
       <tbody>
-        {{range .Players}}
+        {{range .tournaments}}
         <tr>
           <td><a href="/user/{{.Selector.String}}">{{.Name}}</a></td>
-          <td>{{.Rank}}</td>
-        </tr>
-        {{end}}
-      </tbody>
-    </table>
-    {{else}}
-    <h2>No Organizers.</h2>
-    {{end}} 
-    
-    {{if .Teams}}
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .Teams}}
-        <tr>
-          <th scope="row">1</th>
-          <td><a href="/team/{{.Selector.String}}">{{.Name}}</a></td>
         </tr>
         {{end}}
       </tbody>
     </table>
     {{else}}
     <h2>No Teams.</h2>
-    {{end}}
+    {{end}} 
+
+
+  <div >
+    <p>
+        <a href="/tournament?page={{.PageNumber - 1}}&results={{.Results}}">Last</a> 
+        {{.PageNumber}} 
+        {{if .Next}}
+        <a href="/tournament?page={{.PageNumber + 1}}&results={{.Results}}">Next</a>
+        {{end}}
+    </p>
+  </div>
 
   </div>
 </body>

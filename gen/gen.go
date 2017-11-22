@@ -54,7 +54,7 @@ func main() {
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
-	e.GenTeams()
+	e.GenPlayers()
 
 }
 
@@ -139,4 +139,18 @@ func (e *Env) GenTeams() {
 		_, err = e.Db.CreateTeam(t)
 		fmt.Println(err)
 	}
+
+}
+
+func (e *Env) GenPlayers() {
+
+	for i := 2213; i <= 3121; i++ {
+		pl := env.Player{
+
+			Rank: env.Rank(rand.Intn(100) % 2),
+		}
+
+		e.Db.AddPlayer(pl, rand.Intn(100)+1, i)
+	}
+
 }

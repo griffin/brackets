@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func (e *Env) GetUserRoute(c *gin.Context) {
@@ -16,7 +17,7 @@ func (e *Env) GetUserRoute(c *gin.Context) {
 	c.HTML(http.StatusOK, "user_index.html", usr)
 }
 
-func (e *Env) PostUserRoute(c *gin.Context) {
+func (e *Env) GetUsersRoute(c *gin.Context) {
 
 }
 

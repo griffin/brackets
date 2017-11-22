@@ -13,7 +13,10 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "team_index.html", team)
+	c.HTML(http.StatusOK, "team_index.html", gin.H{
+		"team":  team,
+		"games": nil,
+	})
 }
 
 func (e *Env) PostTeamRoute(c *gin.Context) {
