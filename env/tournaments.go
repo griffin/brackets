@@ -19,6 +19,9 @@ const (
 	deleteAllOrganizers = "DELETE FROM organizers WHERE tournament_id=$1"
 
 	selectAllTeams = "SELECT id, selector, name FROM teams WHERE tournament_id=$1"
+
+	selectTournaments  = "SELECT id, selector, name FROM tournaments ORDER BY id ASC LIMIT $1 OFFSET $2"
+	getTournamentCount = "SELECT COUNT(*) FROM tournaments"
 )
 
 type tournamentDatastore interface {
@@ -125,7 +128,21 @@ func (d *db) DeleteTournament(tour Tournament) error {
 	return nil
 }
 
-func (d *db) GetOrganizer(selector string, usr User) (*Organizer, error) {
-	// Don't know if needed yet
-	return nil, nil
+func (d *db) GetTournaments(amount, page int) ([]*Tournament, int, error) {
+	rows, err := d.DB.Query(selectTournaments, amount, amount*page)
+	if err != nil {
+		return nil, 0, errors.New("could not get next page")
+	}
+	var rt []*Tournament
+
+	for rows.Next() {
+		var tour Tournament
+		err = rows.Scan(&tour.ID, &tour.sel, &tour.Name)
+		rt = append(rt, &tour)
+	}
+
+	count := 0
+	err = d.DB.QueryRow(getTournamentCount).Scan(&count)
+
+	return rt, count - (amount * (page + 1)), nil
 }
