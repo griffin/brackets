@@ -50,3 +50,66 @@ object
 {
     position: relative;  
 }
+#container 
+{
+    width: 100%;
+
+}
+#headTitle
+{
+    padding: 10px 50px; 
+
+}
+#profile td
+{
+    padding: 50px; 
+}
+#left 
+{
+    width: 50%; 
+    float:left; 
+    padding: 20px; 
+    margin: 0 auto; 
+}
+#right table 
+{
+    top: 50px; 
+}
+#right
+{
+    width: 45%; 
+    float:right; 
+    padding: 20px; 
+    margin: 0 auto; 
+}
+
+#right td 
+{
+    text-align: center; 
+    padding: 10px; 
+    max-width: 600px; 
+}
+#right th
+{
+    text-align: center; 
+    padding: 25px; 
+}
+footer
+{
+    padding: 5px; 
+    width: 100%; 
+    background-color: black; 
+    color: white; 
+    position: absolute; 
+    bottom: 0px; 
+    height: 45px; 
+}
+footer a 
+{
+    color: white; 
+}
+#container 
+{
+    width: 500px; 
+    margin: 0 auto; 
+}
