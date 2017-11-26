@@ -50,7 +50,7 @@ func (e *Env) PostLoginRoute(c *gin.Context) {
 }
 
 func (e *Env) PostLogoutRoute(c *gin.Context) {
-
+	c.SetCookie("user_session", "del", 0, "/", "", false, false)
 }
 
 func (e *Env) GetRegisterRoute(c *gin.Context) {

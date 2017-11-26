@@ -81,5 +81,45 @@ func genderSel(g env.Gender) string {
 }
 
 func (e *Env) PostSettingsRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
+
+	usr, err := e.Db.CheckSession(token)
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
+
+	first, e1 := c.GetPostForm("first_name")
+	last, e2 := c.GetPostForm("last_name")
+	email, e3 := c.GetPostForm("email")
+	dobSt, e4 := c.GetPostForm("dob")
+	genderSt, e5 := c.GetPostForm("gender")
+
+	if !validField(first, e1) ||
+		!validField(last, e2) ||
+		!validField(email, e3) ||
+		!validField(dobSt, e4) ||
+		!validField(genderSt, e5) {
+
+		c.HTML(http.StatusOK, "user_edit.html", gin.H{
+			"message": "you must complete all forms",
+			"type":    "danger",
+		})
+		return
+	}
+
+	err = e.Db.UpdateUser(*usr)
+	if err != nil {
+		c.HTML(http.StatusOK, "user_edit.html", gin.H{
+			"message": "user could not be updated",
+			"type":    "danger",
+		})
+	}
+
+	c.HTML(http.StatusOK, "user_edit.html", gin.H{
+		"user": usr,
+	})
 
 }
