@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/ggpd/brackets/env"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,8 +39,6 @@ func (e *Env) GetUsersRoute(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "notfound.html", nil)
 	}
 
-	e.Log.Println(left)
-
 	c.HTML(http.StatusOK, "users.html", gin.H{
 		"users":          usr,
 		"results":        results,
@@ -50,7 +50,34 @@ func (e *Env) GetUsersRoute(c *gin.Context) {
 }
 
 func (e *Env) GetSettingsRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
 
+	usr, err := e.Db.CheckSession(token)
+	if err != nil {
+		c.Redirect(http.StatusFound, "/")
+	}
+
+	c.HTML(http.StatusOK, "user_edit.html", gin.H{
+		"user":                usr,
+		genderSel(usr.Gender): usr.Gender.String(),
+	})
+}
+
+func genderSel(g env.Gender) string {
+	switch g {
+	case env.Male:
+		return "male"
+	case env.Female:
+		return "female"
+	case env.Other:
+		return "other"
+	case env.PreferNotToSay:
+		return "pnto"
+	}
+	return ""
 }
 
 func (e *Env) PostSettingsRoute(c *gin.Context) {

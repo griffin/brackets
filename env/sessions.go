@@ -7,15 +7,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-redis/redis"
-	"golang.org/x/crypto/bcrypt"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 const (
 	createSession         = "INSERT INTO sessions (validator, selector, user_id, exp) VALUES ($1, $2, $3, $4)"
-	selectSession         = "SELECT users.id, users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users WHERE users.selector=$1 "
+	selectSession         = "SELECT users.id, users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users ON sessions.user_id=users.id WHERE sessions.selector=$1 "
 	validateUser          = "SELECT id, selector, validator, first_name, last_name, gender, dob FROM users WHERE email=$1"
 	invalidateSession     = "DELETE FROM sessions WHERE selector=$1"
 	invalidateAllSession  = "DELETE FROM sessions WHERE user_id=$1"
@@ -50,9 +50,9 @@ func (d *db) CreateSession(email, password string) (*User, string, error) {
 		return nil, "", errors.New("incorrect password")
 	}
 
-	session := d.insertSession(*usr)
+	token := d.insertSession(*usr)
 
-	return usr, session, nil
+	return usr, token, nil
 }
 
 func (d *db) insertSession(user User) string {
@@ -117,7 +117,7 @@ func (d *db) CheckSession(token string) (*User, error) {
 
 	//Check Redis cache
 
-	jsonUser, err := d.Get(selector).Result()
+	/*jsonUser, err := d.Get(selector).Result()
 	if err == redis.Nil {
 		goto query
 	}
@@ -127,26 +127,32 @@ func (d *db) CheckSession(token string) (*User, error) {
 		d.Println("error parsing redis token")
 		goto query
 
-	}
+	}*/
 
-	goto check
+	//goto check
 
-query: // Skip to the SQL query
+	//query: // Skip to the SQL query
 
-	err = d.QueryRow(selectSession, selector).Scan(&usr.ID, &usr.Email, &usr.FirstName, &usr.LastName, usr.Gender, usr.DateOfBirth, &valQuery, &exp)
+	err := d.QueryRow(selectSession, selector).Scan(&usr.ID, &usr.Email, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth, &valQuery, &exp)
 	if err != nil {
+		d.Logger.Println(err)
 		return nil, errors.New("no validator found")
 	}
 
-check:
+	//check:
 
 	q, err := base64.StdEncoding.DecodeString(valQuery)
-	if bytes.Equal(validator[:], q) { // TODO also check exp
+	if err != nil {
+		d.Logger.Println(err)
+	}
+
+	if !bytes.Equal(validator[:], q) { // TODO also check exp
 		return nil, errors.New("validator != valQ")
 	}
 
-	if time.Now().UnixNano() < exp { //TODO come up with when to update cache
-		go d.updateCache(usr, token)
+	if time.Now().Unix() > exp { //TODO come up with when to update cache
+		//go d.updateCache(usr, token)
+		return nil, errors.New("expired session")
 	}
 
 	return &usr, nil

@@ -54,15 +54,17 @@ func main() {
 	e.ConnectDb(sqlOptions, redisOptions)
 
 	fm := template.FuncMap{
-		"age": env.Age,
+		"age":     env.Age,
+		"httpdob": env.HttpString,
 	}
 
 	router.SetFuncMap(fm)
 
-	router.LoadHTMLFiles("public/index.html",
+	router.LoadHTMLFiles("public/home.html",
 		"public/notfound.html",
 		"public/user/user_index.html",
 		"public/user/user_login.html",
+		"public/user/user_edit.html",
 		"public/user/user_register.html",
 		"public/user/users.html",
 		"public/team/team_index.html",
@@ -72,6 +74,8 @@ func main() {
 	/*
 	 * Register Routes
 	 */
+
+	router.NoRoute(routes.NotFoundRoute)
 
 	router.Static("/assets", "public/assets")
 
@@ -89,7 +93,7 @@ func main() {
 	router.POST("/settings", e.PostSettingsRoute)
 
 	router.GET("/tournament/:selector", e.GetTournamentRoute)
-	router.POST("/tournament", e.PostTournamentRoute)
+	router.GET("/tournament", e.GetTournamentsRoute)
 
 	router.GET("/team/:selector", e.GetTeamRoute)
 	router.POST("/team", e.PostTeamRoute)

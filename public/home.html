@@ -30,8 +30,8 @@
 
             <ul class="nav navbar-nav navbar-right">
                     
-            {{ if .ID }}
-                 <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.FirstName}} </a> </li> 
+            {{ if .user }}
+                 <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.user.FirstName}} </a> </li> 
             {{else}}
 
                         <li> <a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
@@ -42,7 +42,7 @@
         </div>
         </nav> 
 
-        <center><div id="Welcome"> <h2> {{ if .ID}} Welcome {{.FirstName}} {{end}}</h2> </div></center>
+        <center><div id="Welcome"> <h2> {{ if .user}} Welcome {{.user.FirstName}} {{end}}</h2> </div></center>
         <div id="break"> 
             <div class="container-fluid"> 
                 <div class="circle"> <h5>Wins</h5> <h1>5</h1> </div>

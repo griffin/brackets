@@ -2,6 +2,7 @@ package env
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -129,6 +130,21 @@ func (g Gender) String() string {
 	return "Prefer not to say"
 }
 
+func ToGender(st string) Gender {
+	switch strings.ToLower(st) {
+	case "male":
+	case "m":
+		return Male
+	case "female":
+	case "f":
+		return Female
+	case "other":
+	case "o":
+		return Other
+	}
+	return PreferNotToSay
+}
+
 func Age(birthday time.Time) int {
 	now := time.Now()
 	years := now.Year() - birthday.Year()
@@ -136,4 +152,8 @@ func Age(birthday time.Time) int {
 		years--
 	}
 	return years
+}
+
+func HttpString(date time.Time) string {
+	return date.Format("2006-01-02")
 }

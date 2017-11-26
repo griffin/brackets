@@ -1,13 +1,10 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/ggpd/brackets/env"
 	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
-const (
-	bootStrap = ""
 )
 
 type Env struct{ *env.Env }
@@ -17,22 +14,24 @@ func CastEnv(e *env.Env) *Env {
 }
 
 func (e *Env) GetHomeRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+	if err != nil {
+		c.HTML(http.StatusOK, "home.html", nil)
+		return
+	}
+
+	usr, err := e.Db.CheckSession(token)
+	if err != nil {
+		c.HTML(http.StatusOK, "home.html", nil)
+		return
+	}
+
+	c.HTML(http.StatusOK, "home.html", gin.H{
+		"user": usr,
+	})
 
 }
 
-func PushJS() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		r := c.Request
-
-		if pusher, ok := c.Writer.(http.Pusher); ok {
-			options := &http.PushOptions{
-				Header: http.Header{
-					"Accept-Encoding": r.Header["Accept-Encoding"],
-				},
-			}
-
-			pusher.Push(bootStrap, options)
-		}
-
-	}
+func NotFoundRoute(c *gin.Context) {
+	c.HTML(http.StatusNotFound, "notfound.html", nil)
 }

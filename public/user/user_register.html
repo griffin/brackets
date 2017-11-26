@@ -12,12 +12,15 @@
 <div id="container">
         <div id="login-form" class="well center">
         <h2 align="center"><a href="/">brackets</a> Register</h2>
+        {{if .message}}
+        <div class="alert alert-{{.type}}" role="alert">{{.message}}</div>
+        {{end}}
         <form action="/register" method="POST">
-            First Name: <input type="text" class="form-control" type="text" name="first_name" required><br>
-            Last Name: <input type="text" class="form-control" type="text" name="last_name" required><br>
-            Email: <input type="text" class="form-control" type="email" name="email" required><br>
-            Password: <input type="text" class="form-control" type="password" name="passwd1" required><br>
-            Password (Reenter): <input type="text" class="form-control" type="password" name="passwd2" required><br>
+            First Name: <input type="text" class="form-control" name="first_name" required><br>
+            Last Name: <input type="text" class="form-control" name="last_name" required><br>
+            Email: <input type="email" class="form-control" name="email" required><br>
+            Password: <input type="password" class="form-control" name="passwd1" required><br>
+            Password (Reenter): <input type="password" class="form-control" name="passwd2" required><br>
             Date of Birth: <input type="date" class="form-control" name="dob" required><br>
             Gender:  
                 <select class="form-control" name="gender" required>

@@ -29,6 +29,8 @@ type tournamentDatastore interface {
 	GetTournament(selector string, full bool) (*Tournament, error)
 	UpdateTournament(tour Tournament) error
 	DeleteTournament(tour Tournament) error
+
+	GetTournaments(amount, page int) ([]*Tournament, int, error)
 }
 
 type Tournament struct {
