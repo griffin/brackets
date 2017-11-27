@@ -12,6 +12,14 @@ import (
 const amountResults = 30
 
 func (e *Env) GetUserRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+
+	var login *env.User
+
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+	}
+
 
 	usr, err := e.Db.GetUser(c.Param("selector"))
 	if err != nil {
@@ -19,7 +27,10 @@ func (e *Env) GetUserRoute(c *gin.Context) {
 		return
 	}
 
-	c.HTML(http.StatusOK, "user_index.html", usr)
+	c.HTML(http.StatusOK, "user_index.html", gin.H{
+		"login": login,
+		"user": usr,
+	})
 }
 
 func (e *Env) GetUsersRoute(c *gin.Context) {
