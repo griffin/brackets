@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const amountResults = 30
 
 func (e *Env) GetUserRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
@@ -34,6 +33,13 @@ func (e *Env) GetUserRoute(c *gin.Context) {
 }
 
 func (e *Env) GetUsersRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+	
+		var login *env.User
+	
+		if err == nil {
+			login, err = e.Db.CheckSession(token)
+		}
 
 	pageStr := c.DefaultQuery("page", "0")
 	resultsStr := c.DefaultQuery("results", "30")
@@ -51,6 +57,7 @@ func (e *Env) GetUsersRoute(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "users.html", gin.H{
+		"login": login,
 		"users":          usr,
 		"results":        results,
 		"pageNumber":     page,

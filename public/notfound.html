@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
         <head> 
-                <title> Brackets | Home</title>
+                <title> Brackets | Not Found</title>
                 <!-- Latest compiled and minified CSS -->
                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
                 <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
@@ -22,23 +22,9 @@
                     </div>
         
                  <ul class="nav navbar-nav">
-                    <li > <a href="/"> My Profile </a> </li>
                     <li> <a href="/tournament"> Tournaments </a> </li>
                     <li> <a href="/team"> Teams </a></li> 
                 </ul> 
-        
-                <ul class="nav navbar-nav navbar-right">
-                        
-                {{ if .user }}
-                        <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> {{.user.FirstName}} </a> </li> 
-                        <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
-                        
-                {{else}}
-                            <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
-                            <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
-                {{end}}
-            </ul>
-            
             </div>
             </nav> 
 

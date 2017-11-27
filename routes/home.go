@@ -37,11 +37,8 @@ func (e *Env) GetHomeRoute(c *gin.Context) {
 		e.Log.Println(err)
 	}
 
-
-
-
 	c.HTML(http.StatusOK, "home.html", gin.H{
-		"user": usr,
+		"login": usr,
 		"teams": teams,
 		"games": games,
 	})

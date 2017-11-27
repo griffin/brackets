@@ -49,8 +49,9 @@ func (e *Env) PostLoginRoute(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
-func (e *Env) PostLogoutRoute(c *gin.Context) {
-	c.SetCookie("user_session", "del", 0, "/", "", false, false)
+func (e *Env) GetLogoutRoute(c *gin.Context) {
+	c.SetCookie("user_session", "del", -1, "/", "", false, false)
+	c.Redirect(http.StatusFound, "/")
 }
 
 func (e *Env) GetRegisterRoute(c *gin.Context) {

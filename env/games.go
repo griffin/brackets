@@ -17,7 +17,8 @@ const (
 
 	getAllGames = "SELECT games.id, games.selector, games.time, games.location, t1.id, t1.name, " +
 					"t1.selector, t2.id, t2.name, t2.selector " +
-					"FROM games JOIN teams t1 ON games.away_id=t1.id JOIN teams t2 ON games.home_id=t2.id WHERE t1.id IN ($1) OR t2.id IN ($1)"
+					"FROM games JOIN teams t1 ON games.away_id=t1.id JOIN teams t2 ON games.home_id=t2.id WHERE t1.id IN ($1) OR t2.id IN ($1) " +
+					"ORDER BY games.time ASC"
 
 )
 

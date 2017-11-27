@@ -1,6 +1,7 @@
 package main
 
 import (
+	"time"
 	"fmt"
 
 	"github.com/ggpd/brackets/env"
@@ -56,6 +57,8 @@ func main() {
 	fm := template.FuncMap{
 		"age":     env.Age,
 		"httpdob": env.HttpString,
+		"time": timeSt,
+		"date": dateSt,
 	}
 
 	router.SetFuncMap(fm)
@@ -84,7 +87,7 @@ func main() {
 	router.GET("/login", e.GetLoginRoute)
 	router.POST("/login", e.PostLoginRoute)
 
-	router.POST("/logout", e.PostLogoutRoute)
+	router.GET("/logout", e.GetLogoutRoute)
 
 	router.GET("/register", e.GetRegisterRoute)
 	router.POST("/register", e.PostRegisterRoute)
@@ -107,3 +110,12 @@ func main() {
 	//e.Log.Fatal(autotls.Run(router, fmt.Sprintf("%v:%v", url, port)))
 	router.Run(fmt.Sprintf("%v:%v", url, port))
 }
+
+func dateSt(t time.Time) string{
+	return t.Format("Monday, January 2, 2006")
+}
+
+func timeSt(t time.Time) string {
+	return t.Format("3:04 PM")
+}
+

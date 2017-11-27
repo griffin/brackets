@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/ggpd/brackets/env"
 	"net/http"
 )
 
@@ -13,9 +14,15 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 		return
 	}
 
+	var teams []env.Team
+	teams = append(teams, *team)
+
+	games, err := e.Db.GetUpcomingGames(teams)
+
+
 	c.HTML(http.StatusOK, "team_index.html", gin.H{
 		"team":  team,
-		"games": nil,
+		"games": games,
 	})
 }
 

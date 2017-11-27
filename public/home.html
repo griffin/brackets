@@ -1,7 +1,7 @@
 <!doctype html> 
 <html>
 
-        {{define "header"}}
+        {{/*define "header"*/}}
         <head> 
             <title> Brackets | Home </title>
             <!-- Latest compiled and minified CSS -->
@@ -24,9 +24,11 @@
                 </div>
 
              <ul class="nav navbar-nav">
-                <li class = "active"> <a href="/user/{{.Selector}}"> My Profile </a> </li>
+                {{if .login}}
+                <li> <a href="/user/{{.login.Selector.String}}"> My Profile </a> </li>
+                {{end}}
                 <li> <a href="/tournament"> Tournaments </a> </li>
-                <li> <a href="/team"> Teams </a></li> 
+                <li> <a href="/user"> Users </a></li> 
             </ul> 
 
             <ul class="nav navbar-nav navbar-right">
@@ -43,22 +45,23 @@
         
         </div>
         </nav> 
-        {{end}}
+        {{/*end*/}}
 
-        {{template "header"}}
+       {{/*template "header"*/}}
 
-        {{if .user}}
+        {{if .login}}
         <center><div id="Welcome"> <h2> {{ if .login}} Welcome {{.login.FirstName}} {{end}}</h2> </div></center>
         
         <div id="content"> 
             <ul class="nav nav-tabs">
                 <li class="active"> <a data-toggle="tab" href="#MyTeam"> My Team</a> </li>
                 <li> <a data-toggle="tab" href="#MyGames"> My Games</a></li>
-                <li> <a href="/user/{{.Selector}}"> My Profile </a>
+                <li> <a data-toggle="tab" href="#MyProfile"> My Profile </a></li>
             </ul>
 
             <div class="tab-content container-fluid"> 
                 <div id="MyTeam" class="tab-pane fade in active">
+                
                 
                   {{range .teams}}
                     <ul> 
@@ -66,6 +69,11 @@
                            <a href="/team/{{.Selector}}">{{.Name}}</a>
                         </li>     
                     </ul>
+
+                {{else}}
+                <tr> 
+                    <td> There are no Teams </td>     
+                </tr>
                   {{end}}
                     
                 </div>
@@ -83,11 +91,11 @@
                         {{ if .games}}
                         {{range .games}}
                         <tr> 
-                            <td> {{  .Time.String}}  </td>  
-                            <td> <a href="team/{{.HomeTeam.Selector}}"> {{ .HomeTeam.Name}} </a>  </td>
+                            <td> {{date .Time}} @ {{time .Time}} </td>  
+                            <td> <a href="team/{{.HomeTeam.Selector.String}}"> {{.HomeTeam.Name}} </a>  </td>
                             <td> VS </td> 
-                            <td> <a href="team/{{.AwayTeam.Selector}}">{{ .AwayTeam.Name}}</a>  </td>
-                            <td> {{ .Location }}</td>
+                            <td> <a href="team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
+                            <td>{{.Location}}</td>
                         </tr>
                         {{end}}
                         {{else}}
@@ -99,10 +107,10 @@
                     </table>
                 </div>
                 <div id="MyProfile" class="tab-pane fade">
-                    <h3> My Profile </h3>
-                    <!-- fourm to change password, email, etc...-->
                     <p>
-                        some form to edit the profile here maybe who knows 
+                        <h3>Name: {{.login.FirstName}} {{.login.LastName}}</h3>
+                        <h3>Gender: {{.login.Gender.String}}</h3>
+                        <h3>Age: {{age .login.DateOfBirth}}</h3>
                     </p>
                 </div>
             </div>

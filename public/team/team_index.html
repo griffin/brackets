@@ -2,7 +2,7 @@
 <html>
 
     <head> 
-        <title> Brackets | {{.Name}} </title>
+        <title> Brackets | {{.team.Name}} </title>
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
@@ -23,9 +23,11 @@
             </div>
 
          <ul class="nav navbar-nav">
-            <li> <a href="/user/{{.Selector}}"> My Profile </a> </li>
+                {{ if .login }}
+            <li> <a href="/user/{{.login.Selector.String}}"> My Profile </a> </li>
+            {{end}}
             <li> <a href="/tournament"> Tournaments </a> </li>
-            <li class="active"> <a href="/team"> Teams </a></li> 
+            <li > <a href="/user"> Users </a></li> 
         </ul> 
 
         <ul class="nav navbar-nav navbar-right">
@@ -72,31 +74,33 @@
     <h2>No Players.</h2>
     {{end}} 
     
-    {{if .games}}
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Opponent</th>
-          <th scope="col">Location</th>
-          <th scope="col">Time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .games}}
-        <tr>
-          <th scope="row">1</th>
-          <td>{{.Name}}</td>
-          <td>{{.Opponent}}</td>
-          <td>{{.Location}}</td>
-          <td>{{.Time}}</td>
-        </tr>
-        {{end}}
-      </tbody>
-    </table>
-    {{else}}
-    <h2>No Games.</h2>
-    {{end}}
+    <table class="table table-striped">
+            <tr> 
+                <!-- testing to see if any games --> 
+                <th> Time </th>
+                <th> Team 1</th>
+                <td> </td>
+                <th> Team 2 </th>
+                <th> Location </th> 
+               
+            </tr>
+            {{ if .games}}
+            {{range .games}}
+            <tr> 
+                <td> {{date .Time}} @ {{time .Time}} </td>  
+                <td> <a href="team/{{.HomeTeam.Selector.String}}"> {{.HomeTeam.Name}} </a>  </td>
+                <td> VS </td> 
+                <td> <a href="team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
+                <td>{{.Location}}</td>
+            </tr>
+            {{end}}
+            {{else}}
+                <tr> 
+                   <td> There are no Games </td>     
+                </tr>
+            {{end}}
+
+        </table>
 
   </div>
 </body>

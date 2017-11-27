@@ -22,19 +22,21 @@
                     </div>
     
                  <ul class="nav navbar-nav">
-                    <li> <a href="/user/{{login.Selector.String}}"> My Profile </a> </li>
-                    <li> <a href="/tournament"> Tournaments </a> </li>
-                    <li class="active"> <a href="/team"> Teams </a></li> 
+                        {{ if .login }}
+                    <li><a href="/user/{{.login.Selector.String}}"> My Profile </a></li>
+                    {{end}}
+                    <li><a href="/tournament"> Tournaments </a></li>
+                    <li><a href="/user"> Users </a></li> 
                 </ul> 
     
                 <ul class="nav navbar-nav navbar-right">
                         
-                {{ if .login }}
-                        <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
-                        <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
+                {{if .login}}
+                        <li><a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}}</a></li> 
+                        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
                         
                 {{else}}
-                            <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
+                            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
                             <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
                 {{end}}
             </ul>
@@ -71,8 +73,8 @@
                 <td> </td>
                 <td> <input class="form-control" type="text" name="Selector" value=""> </td>
                 <td> <select class="form-control" name="rank" required>
-                        <option {{if .Member }}selected{{end}} value="m">Member</option>
-                        <option {{if .Manager }}selected{{end}} value="f">Manager</option>
+                        <option value="m">Member</option>
+                        <option value="f">Manager</option>
                     </select> </td>
 
                <td> <input type="button" class="btn btn-primary" value="verify"> </td>     

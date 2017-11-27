@@ -22,21 +22,15 @@
                     </div>
     
                  <ul class="nav navbar-nav">
-                    <li class = "active"> <a href="/user/{{.Selector}}"> My Profile </a> </li>
+                    <li> <a href="/user/{{.user.Selector.String}}"> My Profile </a> </li>
                     <li> <a href="/tournament"> Tournaments </a> </li>
-                    <li> <a href="/team"> Teams </a></li> 
+                    <li> <a href="/user"> Users </a></li> 
                 </ul> 
     
                 <ul class="nav navbar-nav navbar-right">
                         
-                {{ if .login }}
-                        <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
-                        <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
-                        
-                {{else}}
-                            <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
-                            <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
-                {{end}}
+                    <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span>{{.user.FirstName}}</a></li> 
+                    <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a> </li>
             </ul>
             
             </div>
@@ -45,7 +39,7 @@
 
 <div id="container-box">
   <div id="left">
-        <form action="/user" method="POST">
+    <form action="/user" method="POST">
     <table id="profile"> 
       <tr> 
         <th> 
@@ -68,7 +62,7 @@
           </td>
       </tr>
     </table> 
-</form>
+    </form>
     </div>
 
     <div id="right"> 
