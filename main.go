@@ -98,7 +98,7 @@ func main() {
 	router.GET("/team/:selector", e.GetTeamRoute)
 
 	router.GET("/team/:selector/edit", nil)
-	router.GET("/team/:selector/edit", nil)
+	router.POST("/team/:selector/edit", nil)
 
 	router.GET("/user/:selector", e.GetUserRoute)
 	router.GET("/user", e.GetUsersRoute)
