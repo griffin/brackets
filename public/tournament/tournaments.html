@@ -9,6 +9,7 @@
         
         <!-- jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="assets/javascript/home.js"></script>
         <!-- Latest compiled JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     </head>
@@ -22,15 +23,15 @@
             </div>
 
          <ul class="nav navbar-nav">
-            <li > <a href="/"> My Profile </a> </li>
-            <li class = "active"> <a href="/tournament"> Tournaments </a> </li>
+            <li> <a href="/user/{{.Selector}}"> My Profile </a> </li>
+            <li class="active"> <a href="/tournament"> Tournaments </a> </li>
             <li> <a href="/team"> Teams </a></li> 
         </ul> 
 
         <ul class="nav navbar-nav navbar-right">
                 
-        {{ if .user }}
-                <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> {{.user.FirstName}} </a> </li> 
+        {{ if .login }}
+                <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
                 <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
                 
         {{else}}

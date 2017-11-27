@@ -1,8 +1,9 @@
 <!doctype html> 
 <html>
 
+        {{define "header"}}
         <head> 
-            <title> Brackets | Home</title>
+            <title> Brackets | Home </title>
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
             <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
@@ -23,15 +24,15 @@
                 </div>
 
              <ul class="nav navbar-nav">
-                <li class = "active"> <a href="/"> My Profile </a> </li>
+                <li class = "active"> <a href="/user/{{.Selector}}"> My Profile </a> </li>
                 <li> <a href="/tournament"> Tournaments </a> </li>
                 <li> <a href="/team"> Teams </a></li> 
             </ul> 
 
             <ul class="nav navbar-nav navbar-right">
                     
-            {{ if .user }}
-                    <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> {{.user.FirstName}} </a> </li> 
+            {{ if .login }}
+                    <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
                     <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
                     
             {{else}}
@@ -42,15 +43,18 @@
         
         </div>
         </nav> 
+        {{end}}
+
+        {{template "header"}}
 
         {{if .user}}
-        <center><div id="Welcome"> <h2> {{ if .user}} Welcome {{.user.FirstName}} {{end}}</h2> </div></center>
+        <center><div id="Welcome"> <h2> {{ if .login}} Welcome {{.login.FirstName}} {{end}}</h2> </div></center>
         
         <div id="content"> 
             <ul class="nav nav-tabs">
                 <li class="active"> <a data-toggle="tab" href="#MyTeam"> My Team</a> </li>
                 <li> <a data-toggle="tab" href="#MyGames"> My Games</a></li>
-                <li> <a  href="/settings"> My Profile</a></li>
+                <li> <a href="/user/{{.user.Selector.String}}"> My Profile </a>
             </ul>
 
             <div class="tab-content container-fluid"> 
@@ -59,7 +63,12 @@
                   {{range .teams}}
                     <ul> 
                         <li>
-                            {{.Name}}
+                           <a href="/team/{{.Selector}}">{{.Name}}</a>
+                           <ul> 
+                               {{if .Players }}
+                                <li> Hello</li>
+                                {{end}}
+                            </ul>
                         </li>     
                     </ul>
                   {{end}}
@@ -68,18 +77,26 @@
                 <div id="MyGames" class="tab-pane fade">
                     <table class="table table-striped">
                         <tr> 
-                            {{if .games}} <!-- testing to see if any games --> 
+                            <!-- testing to see if any games --> 
                             <th> Time </th>
-                            <th> Home Team </th>
-                            <th> Away Team </th>
-                            {{end}}
+                            <th> Team 1</th>
+                            <th> Team 2 </th>
+                            <th> Location </th> 
+                           
                         </tr>
+                        {{ if .games}}
                         {{range .games}}
                         <tr> 
-                            <td> {{.Time.String}}  </td>  
-                            <td> {{.HomeTeam.Name}}  </td>
-                            <td> {{.AwayTeam.Name}}  </td>
+                            <td> {{  .Time.String}}  </td>  
+                            <td> {{ .HomeTeam.Name}}  </td>
+                            <td> {{ .AwayTeam.Name}}  </td>
+                            <td> {{ .Location }}</td>
                         </tr>
+                        {{end}}
+                        {{else}}
+                            <tr> 
+                               <td> There are no Games </td>     
+                            </tr>
                         {{end}}
 
                     </table>

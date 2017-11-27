@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+        <head> 
+                <title> Brackets | {{.Name}} Edit </title>
+                <!-- Latest compiled and minified CSS -->
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+                <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
+                
+                <!-- jQuery library -->
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <script src="assets/javascript/home.js"></script>
+                <!-- Latest compiled JavaScript -->
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+            </head>
+    
+            <body>
+    
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/"> Brackets </a>
+                    </div>
+    
+                 <ul class="nav navbar-nav">
+                    <li> <a href="/user/{{login.Selector.String}}"> My Profile </a> </li>
+                    <li> <a href="/tournament"> Tournaments </a> </li>
+                    <li class="active"> <a href="/team"> Teams </a></li> 
+                </ul> 
+    
+                <ul class="nav navbar-nav navbar-right">
+                        
+                {{ if .login }}
+                        <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
+                        <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
+                        
+                {{else}}
+                            <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
+                            <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
+                {{end}}
+            </ul>
+            
+            </div>
+            </nav> 
+
+
+<div id="container-box">
+  <div id="left">
+        <form action="/team" method="POST">
+
+            <h2>Name: <input class="form-control" type="text" name="first" value="{{.team.FirstName}}"></h2>
+            
+            <table id="profile"> 
+            <tr> 
+                <th>Name</th>
+                <th>Selector</th>
+                <th>Rank</th>  
+            </tr>
+            <tr>
+                {{range team.Players}}
+                    <td> {{.FirstName}} {{.LastName}}</td>
+                    <td> <input class="form-control" type="text" name="Selector" value="{{.Selector}}"> </td>
+                    <td> <select class="form-control" name="rank" required>
+                            <option {{if .Member }}selected{{end}} value="m">Member</option>
+                            <option {{if .Manager }}selected{{end}} value="f">Manager</option>
+                        </select> </td>
+
+                {{end}}
+            {{for i:=0; i < 5; i++}}
+            <tr>
+            
+                <td> </td>
+                <td> <input class="form-control" type="text" name="Selector" value=""> </td>
+                <td> <select class="form-control" name="rank" required>
+                        <option {{if .Member }}selected{{end}} value="m">Member</option>
+                        <option {{if .Manager }}selected{{end}} value="f">Manager</option>
+                    </select> </td>
+
+               <td> <input type="button" class="btn btn-primary" value="verify"> </td>     
+                
+            </tr> 
+            {{end}}
+         
+    </table> 
+
+    <input type="submit" class="btn btn-primary" value="Submit">  
+    
+</form>
+    </div>
+
+    <div id="right"> 
+       <h1>  </h1>
+    </div>
+
+</div> 
+</body>
+<footer> 
+</footer>
+</html>

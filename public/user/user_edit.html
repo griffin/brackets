@@ -1,42 +1,46 @@
 <!doctype html>
-<html>
-  <head> 
-    <title> brackets | {{.FirstName}} {{.LastName}} </title>
+<head> 
+        <head> 
+                <title> Brackets | Edit User </title>
+                <!-- Latest compiled and minified CSS -->
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+                <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
+                
+                <!-- jQuery library -->
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <script src="assets/javascript/home.js"></script>
+                <!-- Latest compiled JavaScript -->
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+            </head>
     
+            <body>
     
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/home.css"> 
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="/"> Brackets </a>
+                    </div>
     
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-
-
-<body>
-
- 
-  <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#"> Brackets </a>
-        </div>
-
-     <ul class="nav navbar-nav">
-        <li class = "active"> <a href="#"> My Profile </a> </li>
-        <li> <a href="/tournament"> Tournaments </a> </li>
-        <li> <a href="/team"> Teams </a></li> 
-    </ul> 
-
-    <ul class="nav navbar-nav navbar-right">
+                 <ul class="nav navbar-nav">
+                    <li class = "active"> <a href="/user/{{.Selector}}"> My Profile </a> </li>
+                    <li> <a href="/tournament"> Tournaments </a> </li>
+                    <li> <a href="/team"> Teams </a></li> 
+                </ul> 
+    
+                <ul class="nav navbar-nav navbar-right">
+                        
+                {{ if .login }}
+                        <li> <a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
+                        <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
+                        
+                {{else}}
+                            <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
+                            <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
+                {{end}}
+            </ul>
             
-    <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.FirstName}} </a> </li> 
-    </ul>
-
-</div>
-</nav> 
+            </div>
+            </nav> 
 
 
 <div id="container-box">
