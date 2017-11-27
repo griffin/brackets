@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 	"bytes"
+	"strconv"
 )
 
 const (
@@ -61,11 +62,15 @@ func (d *db) GetUpcomingGames(team []Team) ([]*Game, error) {
 
 	var buf bytes.Buffer
 	
-	for _, t := range team {
-		buf.WriteString(string(t.ID) + ",")
+	for i, t := range team {
+		buf.WriteString(strconv.Itoa(int(t.ID)))
+		
+		if i+1 != len(team) {
+			buf.WriteString(",")
+		}
 	}
 
-	rows, err := d.Query(getAllGames, buf.String())
+	rows, err := d.Query(getAllGames, buf.String()[:len(buf.String())])
 	if err != nil {
 		return nil, err
 	}
