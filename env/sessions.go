@@ -167,7 +167,7 @@ func (d *db) updateCache(usr User, token string) error {
 
 	json, err := json.Marshal(usr)
 	if err != nil {
-		return errors.New("falied to marshal user")
+		return errors.New("failed to marshal user")
 	}
 
 	err = d.Set(selector, string(json), time.Duration(exp-time.Now().UnixNano())).Err()

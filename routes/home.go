@@ -26,8 +26,24 @@ func (e *Env) GetHomeRoute(c *gin.Context) {
 		return
 	}
 
+
+	teams, err := e.Db.GetTeams(*usr)
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+	games, err := e.Db.GetUpcomingGames(teams)
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+
+
+
 	c.HTML(http.StatusOK, "home.html", gin.H{
 		"user": usr,
+		"teams": teams,
+		"games": games,
 	})
 
 }

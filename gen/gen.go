@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"time"
+	"strconv"
 )
 
 type Env struct{ *env.Env }
@@ -54,7 +55,7 @@ func main() {
 
 	e.ConnectDb(sqlOptions, redisOptions)
 
-	e.GenPlayers()
+	e.GenGames()
 
 }
 
@@ -142,6 +143,7 @@ func (e *Env) GenTeams() {
 
 }
 
+/*
 func (e *Env) GenPlayers() {
 
 	for i := 2213; i <= 3121; i++ {
@@ -150,7 +152,56 @@ func (e *Env) GenPlayers() {
 			Rank: env.Rank(rand.Intn(100) % 2),
 		}
 
-		e.Db.AddPlayer(pl, rand.Intn(100)+1, i)
+		//e.Db.AddPlayer(pl, rand.Intn(100)+1, i)
 	}
+
+}
+*/
+
+func (e *Env) GenGames() {
+	file, _ := os.Open("test_games.csv")
+	r := csv.NewReader(file)
+	
+		x := 0
+		y := 0
+		for {
+			record, err := r.Read()
+			if err == io.EOF {
+				break
+			}
+			i, _ := strconv.ParseInt(record[0], 10, 64)
+			t := time.Unix(i,0)
+	
+			r1 := (rand.Intn(10) + 1) + y
+			r2 := (rand.Intn(10) + 1) + y
+
+			for r1 == r2 {
+				r1 = (rand.Intn(10) + 1) + y
+				r2 = (rand.Intn(10) + 1) + y
+			}
+
+
+			game := env.Game{
+				Location: record[1],
+				Time: t,
+				AwayTeam: &env.Team{ID: uint(r1)},
+				HomeTeam: &env.Team{ID: uint(r2)},
+			}
+
+			_, err = e.Db.CreateGame(game)
+
+			fmt.Println(err)
+
+
+			if x == 100 {
+				y += 10
+				x = 0
+			}
+
+			x++
+
+		}
+
+
 
 }

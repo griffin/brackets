@@ -130,8 +130,9 @@ func (e *Env) PostRegisterRoute(c *gin.Context) {
 		})
 		return
 	}
-	c.SetCookie("user_session", token, 120, "/", "localhost:8080", false, false)
-	c.Redirect(http.StatusOK, "/")
+	
+	c.SetCookie("user_session", token, 120, "/", "", false, false)
+	c.Redirect(http.StatusFound, "/")
 }
 
 func validField(field string, rec bool) bool {

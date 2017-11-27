@@ -32,8 +32,8 @@
 
     <ul class="nav navbar-nav navbar-right">
             
-   <!-- {{ if .ID }}
-         <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.FirstName}} </a> </li> 
+   <!-- {{ if .login }}
+         <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}} </a> </li> 
     {{else}} -->
 
                 <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
@@ -54,9 +54,9 @@
             <div class="circle"> </div>
           </th>
           <td>
-            <h2>Name: {{.FirstName}} {{.LastName}}</h2>
-            <h2>Gender: {{.Gender.String}}</h2>
-            <h2>Age: {{age .DateOfBirth}}</h2>  
+            <h2>Name: {{.user.FirstName}} {{.user.LastName}}</h2>
+            <h2>Gender: {{.user.Gender.String}}</h2>
+            <h2>Age: {{age .user.DateOfBirth}}</h2>  
           </td>
       </tr>
     </table> 

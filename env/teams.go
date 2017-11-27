@@ -17,6 +17,8 @@ const (
 
 	selectPlayers    = "SELECT users.selector, users.id, users.first_name, users.last_name, users.gender, users.dob, users.email, players.rank FROM users JOIN players ON players.user_id=users.id WHERE players.team_id=$1"
 	deleteAllPlayers = "DELETE FROM players WHERE team_id=$1"
+
+	selectAllPlayerTeam = "SELECT teams.id, teams.selector, teams.name FROM players JOIN teams ON teams.id=players.team_id WHERE players.user_id=$1"
 )
 
 type Rank int
@@ -39,6 +41,7 @@ func (r Rank) String() string {
 type teamDatastore interface {
 	CreateTeam(team Team) (*Team, error)
 	GetTeam(selector string, full bool) (*Team, error)
+	GetTeams(user User) ([]Team, error)
 	UpdateTeam(team Team) error
 	DeleteTeam(selector Team) error
 	//AddPlayer(player Player, i int, id int)
@@ -129,9 +132,18 @@ func (d *db) DeleteTeam(team Team) error {
 	return nil
 }
 
-/*
-func (d *db) AddPlayer(player Player, i int, id int) {
-	_, err := d.DB.Exec(insertPlayer, id, i, player.Rank)
-	d.Logger.Println(err)
+func (d *db) GetTeams(user User) ([]Team, error) {
+	rows, err := d.Query(selectAllPlayerTeam, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	var rt []Team
+	for rows.Next(){
+		var team Team
+		rows.Scan(&team.ID, &team.sel, &team.Name)
+		rt = append(rt, team)
+	}
+
+	return rt, nil
 }
-*/
+
