@@ -1,73 +1,125 @@
-
-
+html 
+{
+    background-color: white; 
+}
 body
-{   
-    margin: 5px 20px; 
-    padding: 5px; 
-    background-color: #99ccff;
-}
-h1
-{
-    text-align: center; 
-}
-
-.right 
-{
-    float: right; 
-    margin: 0 auto; 
-    width: 75%; 
-    position: relative; 
-    border: solid black 2px; 
-   
-}
-.profileTable td 
-{
-    border: solid 2px black; 
-}
-.profile
-{
-    height: 250px; 
-    width: 20%;
-    margin: 10px; 
-    border: solid black 2px; 
-}
-.left
-{
-    float: left; 
-    margin: 10px; 
-    width: 20%; 
-    /*#border: solid black 2px; */
-    
-}
-.navbar li
 {
     padding: 10px; 
-    border: solid white 2px; 
-    background-color: #ccff99;; 
-    margin: 10px 0px; 
+
+}
+nav 
+{
+    padding: 10px; 
+}
+#content
+{
+    width: 80%; 
+    max-height: auto; 
+    position: relative;
+    margin: 0 auto; 
+    padding: 50px; 
 }
 
-.my_stats
+.circle
 {
-    margin: 0 auto; 
-    height: 250px; 
-    position: relative;
-    text-align: center; 
-}
-.circles 
-{
+    border-radius: 50%; 
     width: 200px; 
-    height: 200px;  
-    border-radius: 175px; 
-    background: white; 
-    position: relative; 
-    display: inline-block; 
+    height: 200px; 
+    background-color: black; 
     text-align: center; 
-    margin: 10px 30px;  
+    color: white; 
+    display: inline-block; 
+}
+#break 
+{
+    position: relative; 
+    width: 650px;
+    margin: 0 auto; 
+}
+.cricle h1
+{
+    font-size: 50pt; 
+}
+object 
+{
+    overflow: hidden; 
+    position: relative; 
+    width: 100%; 
+    height: 1050px; 
+}
+.tabstuff
+{
+    position: relative;  
+}
+#container 
+{
+    width: 100%;
+}
+#headTitle
+{
+    padding: 10px 50px; 
+
+}
+#profile td
+{
+    padding: 10px; 
+}
+#left 
+{
+    width: 60%; 
+    float:left; 
+    padding: 20px; 
+    margin: 0 auto; 
+}
+#right table 
+{
+    top: 50px; 
+}
+#right
+{
+    width: 45%; 
+    float:right; 
+    padding: 20px; 
+    margin: 0 auto; 
+}
+#middle 
+{
+    max-width: 600px; 
+    margin: 0 auto; 
+}
+
+#right td 
+{
+    text-align: center; 
+    padding: 10px; 
+    max-width: 600px; 
+}
+#right th
+{
+    text-align: center; 
+    padding: 25px; 
 }
 footer
 {
-    background: black; 
+    padding: 5px; 
     width: 100%; 
-    height: 50px; 
+    background-color: black; 
+    color: white; 
+    position: absolute; 
+    bottom: 0px; 
+    height: 45px; 
+}
+footer a 
+{
+    color: white; 
+}
+#container 
+{
+    width: 500px; 
+    margin: 0 auto; 
+}
+#MyGames td
+{
+    padding: 40px; 
+    border: solid black 2px; 
 }

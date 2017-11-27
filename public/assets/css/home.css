@@ -5,6 +5,7 @@ html
 body
 {
     padding: 10px; 
+
 }
 nav 
 {
@@ -53,7 +54,6 @@ object
 #container 
 {
     width: 100%;
-
 }
 #headTitle
 {
@@ -62,11 +62,11 @@ object
 }
 #profile td
 {
-    padding: 50px; 
+    padding: 10px; 
 }
 #left 
 {
-    width: 50%; 
+    width: 60%; 
     float:left; 
     padding: 20px; 
     margin: 0 auto; 
@@ -80,6 +80,11 @@ object
     width: 45%; 
     float:right; 
     padding: 20px; 
+    margin: 0 auto; 
+}
+#middle 
+{
+    max-width: 600px; 
     margin: 0 auto; 
 }
 
@@ -112,4 +117,17 @@ footer a
 {
     width: 500px; 
     margin: 0 auto; 
+}
+#MyGames table
+{
+    width: 100%; 
+    margin: 25px 10px; 
+}
+#MyGames td,th 
+{
+    padding: 10px 20px; 
+}
+th
+{
+    text-align: center; 
 }

@@ -1,50 +1,48 @@
 <!doctype html>
 <html>
 
-  <head> 
-    <title> brackets </title>
+    <head> 
+        <title> Brackets | Users </title>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/home.css"> 
+        
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="assets/javascript/home.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+
+    <body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"> Brackets </a>
+            </div>
+
+         <ul class="nav navbar-nav">
+            <li> <a href="/"> My Profile </a> </li>
+            <li> <a href="/tournament"> Tournaments </a> </li>
+            <li> <a href="/team"> Teams </a></li> 
+        </ul> 
+
+        <ul class="nav navbar-nav navbar-right">
+                
+        {{ if .user }}
+                <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> {{.user.FirstName}} </a> </li> 
+                <li> <a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a> </li>
+                
+        {{else}}
+                    <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
+                    <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
+        {{end}}
+    </ul>
     
-    
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/css/home.css"> 
-    
-    <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="assets/javascript/home.js"></script>
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
+    </div>
+    </nav> 
 
-
-<body>
-
- 
-  <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#"> Brackets </a>
-        </div>
-
-     <ul class="nav navbar-nav">
-        <li class = "active"> <a href="#"> My Profile </a> </li>
-        <li> <a href="/tournaments"> Tournaments </a> </li>
-        <li> <a href="/teams"> Teams </a></li> 
-    </ul> 
-
-    <ul class="nav navbar-nav navbar-right">
-            
-    {{ if .ID }}
-         <li> <a href="#"></a><span class="glyphicon glyphicon-user"></span> {{.FirstName}} </a> </li> 
-    {{else}}
-
-                <li> <a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
-                <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
-    {{end}}
-</ul>
-
-</div>
-</nav> 
 
 <center> <h1 id="headTitle">All Users </h1> </center>
 
