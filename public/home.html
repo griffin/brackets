@@ -54,7 +54,7 @@
             <ul class="nav nav-tabs">
                 <li class="active"> <a data-toggle="tab" href="#MyTeam"> My Team</a> </li>
                 <li> <a data-toggle="tab" href="#MyGames"> My Games</a></li>
-                <li> <a href="/user/{{.user.Selector.String}}"> My Profile </a>
+                <li> <a href="/user/{{.Selector}}"> My Profile </a>
             </ul>
 
             <div class="tab-content container-fluid"> 
@@ -64,11 +64,6 @@
                     <ul> 
                         <li>
                            <a href="/team/{{.Selector}}">{{.Name}}</a>
-                           <ul> 
-                               {{if .Players }}
-                                <li> Hello</li>
-                                {{end}}
-                            </ul>
                         </li>     
                     </ul>
                   {{end}}
@@ -80,6 +75,7 @@
                             <!-- testing to see if any games --> 
                             <th> Time </th>
                             <th> Team 1</th>
+                            <td> </td>
                             <th> Team 2 </th>
                             <th> Location </th> 
                            
@@ -88,8 +84,9 @@
                         {{range .games}}
                         <tr> 
                             <td> {{  .Time.String}}  </td>  
-                            <td> {{ .HomeTeam.Name}}  </td>
-                            <td> {{ .AwayTeam.Name}}  </td>
+                            <td> <a href="team/{{.HomeTeam.Selector}}"> {{ .HomeTeam.Name}} </a>  </td>
+                            <td> VS </td> 
+                            <td> <a href="team/{{.AwayTeam.Selector}}">{{ .AwayTeam.Name}}</a>  </td>
                             <td> {{ .Location }}</td>
                         </tr>
                         {{end}}
