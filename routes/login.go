@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	loginFailed = "Incorrect username or password."
-	noUsrOrPsw  = "You need to provide a username and password."
+	loginFailed    = "Incorrect username or password."
+	noUsrOrPsw     = "You need to provide a username and password."
+	sessionTimeout = 60 * 60 * 24 * 30
 )
 
 func (e *Env) GetLoginRoute(c *gin.Context) {
@@ -45,7 +46,7 @@ func (e *Env) PostLoginRoute(c *gin.Context) {
 	}
 
 	e.Log.Println(token)
-	c.SetCookie("user_session", token, 120, "/", "", false, false)
+	c.SetCookie("user_session", token, sessionTimeout, "/", "", false, false)
 	c.Redirect(http.StatusFound, "/")
 }
 
@@ -131,8 +132,8 @@ func (e *Env) PostRegisterRoute(c *gin.Context) {
 		})
 		return
 	}
-	
-	c.SetCookie("user_session", token, 120, "/", "", false, false)
+
+	c.SetCookie("user_session", token, sessionTimeout, "/", "", false, false)
 	c.Redirect(http.StatusFound, "/")
 }
 

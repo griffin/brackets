@@ -39,7 +39,10 @@
 
 <div id="container-box">
   <div id="left">
-    <form action="/user" method="POST">
+        {{if .message}}
+        <div class="alert alert-{{.type}}" role="alert">{{.message}}</div>
+        {{end}}
+    <form action="/settings" method="POST">
     <table id="profile"> 
       <tr> 
         <th> 

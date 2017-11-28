@@ -15,7 +15,7 @@ import (
 
 const (
 	createSession         = "INSERT INTO sessions (validator, selector, user_id, exp) VALUES ($1, $2, $3, $4)"
-	selectSession         = "SELECT users.id, users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users ON sessions.user_id=users.id WHERE sessions.selector=$1 "
+	selectSession         = "SELECT users.id, users.selector, users.email, users.first_name, users.last_name, users.gender, users.dob, sessions.validator, sessions.exp FROM sessions JOIN users ON sessions.user_id=users.id WHERE sessions.selector=$1 "
 	validateUser          = "SELECT id, selector, validator, first_name, last_name, gender, dob FROM users WHERE email=$1"
 	invalidateSession     = "DELETE FROM sessions WHERE selector=$1"
 	invalidateAllSession  = "DELETE FROM sessions WHERE user_id=$1"
@@ -133,7 +133,7 @@ func (d *db) CheckSession(token string) (*User, error) {
 
 	//query: // Skip to the SQL query
 
-	err := d.QueryRow(selectSession, selector).Scan(&usr.ID, &usr.Email, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth, &valQuery, &exp)
+	err := d.QueryRow(selectSession, selector).Scan(&usr.ID, &usr.sel, &usr.Email, &usr.FirstName, &usr.LastName, &usr.Gender, &usr.DateOfBirth, &valQuery, &exp)
 	if err != nil {
 		d.Logger.Println(err)
 		return nil, errors.New("no validator found")

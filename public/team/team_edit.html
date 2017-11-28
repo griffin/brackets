@@ -49,7 +49,7 @@
   <div id="left">
         <form action="/team" method="POST">
 
-            <h2>Name: <input class="form-control" type="text" name="first" value="{{.team.FirstName}}"></h2>
+            <h2>Name: <input class="form-control" type="text" name="name" value="{{.team.Name}}"></h2>
             
             <table id="profile"> 
             <tr> 
@@ -58,26 +58,23 @@
                 <th>Rank</th>  
             </tr>
             <tr>
-                {{range team.Players}}
+                {{range .team.Players}}
                     <td> {{.FirstName}} {{.LastName}}</td>
                     <td> <input class="form-control" type="text" name="Selector" value="{{.Selector}}"> </td>
                     <td> <select class="form-control" name="rank" required>
-                            <option {{if .Member }}selected{{end}} value="m">Member</option>
-                            <option {{if .Manager }}selected{{end}} value="f">Manager</option>
+                            <option {{if eq 0 .Rank }}selected{{end}} value="m">Member</option>
+                            <option {{if eq 1 .Rank }}selected{{end}} value="f">Manager</option>
                         </select> </td>
 
                 {{end}}
             {{for i:=0; i < 5; i++}}
             <tr>
-            
                 <td> </td>
-                <td> <input class="form-control" type="text" name="Selector" value=""> </td>
-                <td> <select class="form-control" name="rank" required>
-                        <option value="m">Member</option>
+                <td> <input class="form-control" type="text" name="new_sel{{.}}" value=""> </td>
+                <td> <select class="form-control" name="new_rank{{.}}" required>
+                        <option selected value="m">Member</option>
                         <option value="f">Manager</option>
-                    </select> </td>
-
-               <td> <input type="button" class="btn btn-primary" value="verify"> </td>     
+                    </select> </td> 
                 
             </tr> 
             {{end}}

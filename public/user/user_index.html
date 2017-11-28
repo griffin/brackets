@@ -22,7 +22,7 @@
             </div>
 
          <ul class="nav navbar-nav">
-                {{ if .login }}
+                {{if .login}}
             <li class="active"> <a href="/user/{{.login.Selector.String}}"> My Profile </a> </li>
             {{end}}
             <li> <a href="/tournament"> Tournaments </a> </li>
