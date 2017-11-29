@@ -1,16 +1,17 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/ggpd/brackets/env"
 	"net/http"
+
+	"github.com/ggpd/brackets/env"
+	"github.com/gin-gonic/gin"
 )
 
 func (e *Env) GetTeamRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
-	
+
 	var login *env.User
-	
+
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
 	}
@@ -27,9 +28,8 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 
 	games, err := e.Db.GetUpcomingGames(teams)
 
-
 	c.HTML(http.StatusOK, "team_index.html", gin.H{
-		"user", usr
+		"login": login,
 		"team":  team,
 		"games": games,
 	})
