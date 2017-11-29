@@ -92,9 +92,9 @@
                         {{range .games}}
                         <tr> 
                             <td> {{date .Time}} @ {{time .Time}} </td>  
-                            <td> <a href="team/{{.HomeTeam.Selector.String}}"> {{.HomeTeam.Name}} </a>  </td>
+                            <td> <a href="/team/{{.HomeTeam.Selector.String}}"> {{.HomeTeam.Name}} </a>  </td>
                             <td> VS </td> 
-                            <td> <a href="team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
+                            <td> <a href="/team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
                             <td>{{.Location}}</td>
                         </tr>
                         {{end}}

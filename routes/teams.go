@@ -7,6 +7,14 @@ import (
 )
 
 func (e *Env) GetTeamRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+	
+	var login *env.User
+	
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+	}
+
 	team, err := e.Db.GetTeam(c.Param("selector"), true)
 	if err != nil {
 		e.Log.Println(err)
@@ -21,6 +29,7 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 
 
 	c.HTML(http.StatusOK, "team_index.html", gin.H{
+		"user", usr
 		"team":  team,
 		"games": games,
 	})
