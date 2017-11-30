@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
     <head> 
-            <title> Brackets | {{.user.FirstName}} {{.user.LastName}}</title>
+            <title> Brackets | Users </title>
             <!-- Latest compiled and minified CSS -->
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
             <link rel="stylesheet" type="text/css" href="/assets/css/home.css"> 
@@ -72,11 +72,11 @@
     <div>
             <p>
               {{if gt .pageNumber 0}}
-                <a href="/user?page={{.prevPageNumber}}&results={{.results}}">Last</a> 
+                <a href="/user?page={{.prevPageNumber}}&results={{.results}}"> <span class="glyphicon glyphicon-arrow-left"></span></a>
                 {{end}}
                 {{.pageNumber}} 
                 {{if .next}}
-                <a href="/user?page={{.nextPageNumber}}&results={{.results}}">Next</a>
+               <a href="/user?page={{.nextPageNumber}}&results={{.results}}"> <span class="glyphicon glyphicon-arrow-right"></span></a>
                 {{end}}
             </p>
           </div>

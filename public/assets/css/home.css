@@ -99,7 +99,7 @@ object
     text-align: center; 
     padding: 25px; 
 }
-footer
+/*footer
 {
     padding: 5px; 
     width: 100%; 
@@ -112,11 +112,20 @@ footer
 footer a 
 {
     color: white; 
-}
+}*/
 #container 
 {
-    width: 500px; 
+    width:600px; 
     margin: 0 auto; 
+}
+#wider
+{
+    width: 1000px; 
+    margin: 0 auto; 
+}
+.al-me
+{
+    text-align: right; 
 }
 #MyGames table
 {

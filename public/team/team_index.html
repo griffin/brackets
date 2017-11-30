@@ -75,7 +75,10 @@
     {{else}}
     <h2>No Players.</h2>
     {{end}} 
-    
+    <br> 
+    <center> <h1> Team Schedule</h1></center>
+    </div>
+    <div id="wider">
     <table class="table table-striped">
             <tr> 
                 <!-- testing to see if any games --> 
@@ -92,8 +95,8 @@
                 <td> {{date .Time}} @ {{time .Time}} </td>  
                 <td> <a href="/team/{{.HomeTeam.Selector.String}}"> {{.HomeTeam.Name}} </a>  </td>
                 <td> VS </td> 
-                <td> <a href="/team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
-                <td>{{.Location}}</td>
+                <td class="al-me"> <a href="/team/{{.AwayTeam.Selector.String}}">{{.AwayTeam.Name}}</a></td>
+                <td><center>{{.Location}}</center></td>
             </tr>
             {{end}}
             {{else}}
