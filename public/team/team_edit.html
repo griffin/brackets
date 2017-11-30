@@ -1,96 +1,131 @@
 <!doctype html>
 <html>
-        <head> 
-                <title> Brackets | {{.Name}} Edit </title>
-                <!-- Latest compiled and minified CSS -->
-                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-                <link rel="stylesheet" type="text/css" href="/assets/css/home.css"> 
-                
-                <!-- jQuery library -->
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-                <!-- Latest compiled JavaScript -->
-                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-            </head>
-    
-            <body>
-    
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <a class="navbar-brand" href="/"> Brackets </a>
-                    </div>
-    
-                 <ul class="nav navbar-nav">
-                        {{ if .login }}
-                    <li><a href="/user/{{.login.Selector.String}}"> My Profile </a></li>
-                    {{end}}
-                    <li><a href="/tournament"> Tournaments </a></li>
-                    <li><a href="/user"> Users </a></li> 
-                </ul> 
-    
-                <ul class="nav navbar-nav navbar-right">
-                        
+
+<head>
+    <title> Brackets | {{.team.Name}} Edit </title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/css/home.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/"> Brackets </a>
+            </div>
+
+            <ul class="nav navbar-nav">
+                {{ if .login }}
+                <li>
+                    <a href="/user/{{.login.Selector.String}}"> My Profile </a>
+                </li>
+                {{end}}
+                <li>
+                    <a href="/tournament"> Tournaments </a>
+                </li>
+                <li>
+                    <a href="/user"> Users </a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+
                 {{if .login}}
-                        <li><a href="/settings"><span class="glyphicon glyphicon-user"></span> {{.login.FirstName}}</a></li> 
-                        <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
-                        
+                <li>
+                    <a href="/settings">
+                        <span class="glyphicon glyphicon-user"></span> {{.login.FirstName}}</a>
+                </li>
+                <li>
+                    <a href="/logout">
+                        <span class="glyphicon glyphicon-log-out"></span>Logout</a>
+                </li>
+
                 {{else}}
-                            <li><a href="/register"><span class="glyphicon glyphicon-user"></span> Sign Up </a> </li> 
-                            <li> <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a> </li>
+                <li>
+                    <a href="/register">
+                        <span class="glyphicon glyphicon-user"></span> Sign Up </a>
+                </li>
+                <li>
+                    <a href="/login">
+                        <span class="glyphicon glyphicon-log-in"></span> Login</a>
+                </li>
                 {{end}}
             </ul>
-            
-            </div>
-            </nav> 
 
+        </div>
+    </nav>
 
-<div id="container-box">
-  <div id="left">
-        <form action="/team" method="POST">
+    <div id="container-box">
+        <div id="left">
+                <a href="/team/{{.team.Selector.String}}">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                 Back</a>
+            <form action="/team/{{.team.Selector.String}}/edit" method="POST" id="team">
 
-            <h2>Name: <input class="form-control" type="text" name="name" value="{{.team.Name}}"></h2>
-            
-            <table id="profile"> 
-            <tr> 
-                <th>Name</th>
-                <th>Selector</th>
-                <th>Rank</th>  
-            </tr>
-            <tr>
-                {{range .team.Players}}
-                    <td> {{.FirstName}} {{.LastName}}</td>
-                    <td> <input class="form-control" type="text" name="Selector" value="{{.Selector}}"> </td>
-                    <td> <select class="form-control" name="rank" required>
-                            <option {{if eq 0 .Rank }}selected{{end}} value="m">Member</option>
-                            <option {{if eq 1 .Rank }}selected{{end}} value="f">Manager</option>
-                        </select> </td>
+                <h2>Name:
+                    <input class="form-control" type="text" name="name" value="{{.team.Name}}">
+                </h2>
 
-                {{end}}
-            {{for i:=0; i < 5; i++}}
-            <tr>
-                <td> </td>
-                <td> <input class="form-control" type="text" name="new_sel{{.}}" value=""> </td>
-                <td> <select class="form-control" name="new_rank{{.}}" required>
-                        <option selected value="m">Member</option>
-                        <option value="f">Manager</option>
-                    </select> </td> 
-                
-            </tr> 
-            {{end}}
-         
-    </table> 
+                <table id="profile">
+                    <tr>
+                        <th>Name</th>
+                        <th>Rank</th>
+                        <th> </th>
+                    </tr>
+                    {{range .team.Players}}
+                    <tr>
+                        <td> {{.FirstName}} {{.LastName}}</td>
+                        <td>
+                            <select class="form-control" name="{{.Selector.String}}:rank" required>
+                                <option {{if eq 0 .Rank }}selected{{end}} value="member">Member</option>
+                                <option {{if eq 1 .Rank }}selected{{end}} value="manager">Manager</option>
+                            </select>
+                        </td>
+                        <td>
+                            <a href="/team/{{$.team.Selector.String}}/edit/{{.Selector.String}}/delete">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    {{end}}
+            </form>
+            <form action="/team/{{.team.Selector.String}}/add" method="POST">
+                <tr>
+                    <td>
+                        <input class="form-control" type="text" name="new_sel" value=""> </td>
+                    <td>
+                        <select class="form-control" name="new_rank" required>
+                            <option selected value="member">Member</option>
+                            <option value="manager">Manager</option>
+                        </select>
+                    </td>
 
-    <input type="submit" class="btn btn-primary" value="Submit">  
-    
-</form>
+                    <td>
+                        <button type="submit" class="icon-button">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </td>
+
+                </tr>
+            </form>
+            </table>
+
+            <input type="submit" form="team" class="btn btn-primary" value="Submit">
+        </div>
+        <div id="right">
+            <h1> </h1>
+        </div>
+
     </div>
-
-    <div id="right"> 
-       <h1>  </h1>
-    </div>
-
-</div> 
 </body>
-<footer> 
+<footer>
 </footer>
+
 </html>

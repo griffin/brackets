@@ -71,6 +71,7 @@ func main() {
 		"public/user/user_register.html",
 		"public/user/users.html",
 		"public/team/team_index.html",
+		"public/team/team_edit.html",
 		"public/tournament/tournament_index.html",
 		"public/tournament/tournaments.html")
 
@@ -100,8 +101,10 @@ func main() {
 
 	router.GET("/team/:selector", e.GetTeamRoute)
 
-	router.GET("/team/:selector/edit", nil)
-	router.POST("/team/:selector/edit", nil)
+	router.GET("/team/:selector/edit", e.GetEditTeamRoute)
+	router.POST("/team/:selector/edit", e.PostEditTeamRoute)
+	router.POST("/team/:selector/add", e.PostAddPlayerRoute)
+	router.GET("/team/:selector/edit/:user/delete", e.GetDeletePlayerRoute)
 
 	router.GET("/user/:selector", e.GetUserRoute)
 	router.GET("/user", e.GetUsersRoute)

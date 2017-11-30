@@ -27,6 +27,9 @@
             {{end}}
             <li> <a href="/tournament"> Tournaments </a> </li>
             <li > <a href="/user"> Users </a></li> 
+            {{if eq 1 .rank }}
+            <li > <a href="/team/{{.team.Selector.String}}/edit"> Edit Team </a></li> 
+            {{end}}
         </ul> 
 
         <ul class="nav navbar-nav navbar-right">
