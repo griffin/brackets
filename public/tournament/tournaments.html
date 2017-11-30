@@ -89,11 +89,11 @@
         <div>
             <p>
                 {{if gt .pageNumber 0}}
-                <a href="/tournament?page={{.prevPageNumber}}&results={{.results}}">Last</a>
+                <a href="/tournament?page={{.prevPageNumber}}&results={{.results}}"><span class="glyphicon glyphicon-arrow-left"></span></a>
                 {{end}} 
                 {{.pageNumber}} 
                 {{if .next}}
-                <a href="/tournament?page={{.nextPageNumber}}&results={{.results}}">Next</a>
+                <a href="/tournament?page={{.nextPageNumber}}&results={{.results}}"><span class="glyphicon glyphicon-arrow-right"></span></a>
                 {{end}}
             </p>
         </div>
