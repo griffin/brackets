@@ -19,5 +19,4 @@
 config.yml
 debug
 brackets
-brackets
-brackets 
+*.sql

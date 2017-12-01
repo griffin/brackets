@@ -1,0 +1,13 @@
+app:
+  hostname: localhost
+  port: 8080
+sql:
+  username: brackets
+  password: password
+  database: brackets
+  host: localhost
+  port: 5432
+redis:
+  password: password
+  host: localhost
+  port: 6379

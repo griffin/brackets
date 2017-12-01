@@ -241,3 +241,54 @@ func (e *Env) PostAddPlayerRoute(c *gin.Context) {
 			"team":  team,
 		})	
 	}
+
+	func (e *Env) PostCreateTeamRoute(c *gin.Context){
+		token, err := c.Cookie("user_session")
+		
+			var login *env.User
+		
+			if err == nil {
+				login, err = e.Db.CheckSession(token)
+			}
+		
+			tour, err := e.Db.GetTournament(c.Param("selector"), true)
+			if err != nil {
+				e.Log.Println(err)
+				c.HTML(http.StatusNotFound, "notfound.html", nil)
+				return
+			}
+
+			teamName, er1 := c.GetPostForm("new_team")
+			if !validField(teamName, er1)  {
+				return
+			}
+
+			team := env.Team {
+				TournamentID: tour.ID,
+				Name: teamName,
+			}
+
+			t, err := e.Db.CreateTeam(team)
+			if err != nil {
+				e.Log.Println(err)
+			}
+
+			pl := env.Player{
+				User: *login,
+				Rank: env.Manager,
+			}
+
+			t, err = e.Db.AddPlayer(*t, pl)
+			if err != nil {
+				e.Log.Println(err)
+			}
+
+			e.Log.Println(t.Selector.String())
+			tour.Teams = append(tour.Teams, t)
+
+			c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%s", tour.Selector.String()))
+			c.HTML(http.StatusOK, "tournament_index.html", gin.H{
+				"login": login,
+				"tour": tour,
+			})
+	}

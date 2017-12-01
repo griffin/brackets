@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	createUser = "INSERT INTO users (selector, validator, first_name, last_name, gender, dob, email) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	createUser = "INSERT INTO users (selector, validator, first_name, last_name, gender, dob, email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
 	getUser    = "SELECT id, first_name, last_name, gender, dob, email FROM users WHERE selector=$1"
 	updateUser = "UPDATE users SET first_name=$1, last_name=$2, gender=$3, dob=$4, email=$5 WHERE id=$6"
 	deleteUser = "DELETE FROM users WHERE id=$1"
@@ -56,14 +56,11 @@ func (d *db) CreateUser(usr User, password string) (*User, error) {
 		return nil, err
 	}
 
-	res, err := d.DB.Exec(createUser, usr.Selector.String(), string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email)
+	err = d.DB.QueryRow(createUser, usr.Selector.String(), string(validator), usr.FirstName, usr.LastName, usr.Gender, usr.DateOfBirth, usr.Email).Scan(&usr.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	id, err := res.LastInsertId()
-
-	usr.ID = uint(id)
 
 	return &usr, nil
 }

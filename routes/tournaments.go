@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"github.com/ggpd/brackets/env"
@@ -62,4 +63,32 @@ func (e *Env) GetTournamentsRoute(c *gin.Context) {
 		"prevPageNumber": page - 1,
 		"next":           left > results,
 	})
+}
+
+func (e *Env) PostCreateTournamentRoute(c *gin.Context){
+	token, err := c.Cookie("user_session")
+	
+	var login *env.User
+	
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+	}
+
+	tour := env.Tournament{
+		Name: c.PostForm("new_tour"),
+	}
+
+	t, err := e.Db.CreateTournament(tour)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%s", t.Selector))
+	c.HTML(http.StatusOK, "tournament_index.html", gin.H{
+		"login": login,
+		"tour": t,
+	})
+
 }

@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	createTeam = "INSERT INTO teams (selector, name, tournament_id) VALUES ($1, $2, $3)"
+	createTeam = "INSERT INTO teams (selector, name, tournament_id) VALUES ($1, $2, $3) RETURNING id"
 	getTeam    = "SELECT id, tournament_id, name FROM teams WHERE selector=$1"
 	updateTeam = "UPDATE teams SET name=$1 WHERE id=$2"
 	deleteTeam = "DELETE FROM teams WHERE team_id=$1"
@@ -81,12 +81,7 @@ type Player struct {
 func (d *db) CreateTeam(team Team) (*Team, error) {
 	selector := d.GenerateSelector(selectorLen)
 	team.sel = selector
-	tx, err := d.DB.Begin()
-	tx.Exec(createTeam, selector, team.Name, team.TournamentID)
-	for _, e := range team.Players {
-		tx.Exec(insertPlayer, e.ID, team.ID, e.Rank)
-	}
-	err = tx.Commit()
+	err := d.QueryRow(createTeam, selector, team.Name, team.TournamentID).Scan(&team.ID)
 	if err != nil {
 		return nil, errors.New("failed to create team")
 	}

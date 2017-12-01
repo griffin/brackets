@@ -2,7 +2,7 @@
 <html>
 
     <head> 
-        <title> Brackets | {{.Name}} </title>
+        <title> Brackets | {{.tour.Name}} </title>
         <!-- Latest compiled and minified CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/css/home.css"> 
@@ -47,6 +47,12 @@
 
   <div id="container">
     <h1>{{.tour.Name}}</h1>
+    {{if .login}}
+    <form action="/tournament/{{.tour.Selector.String}}/new" method="POST" >
+        <p>Name: <input type="text" class="form-control" name="new_team" required></p>
+        <input type="submit" class="btn btn-primary" value="Create">
+    </form>
+    {{end}}
     {{if .tour.Organizers}}
     <table class="table table-striped">
       <thead>

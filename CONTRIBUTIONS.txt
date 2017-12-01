@@ -1,0 +1,10 @@
+Griffin Dunn
+- Routing
+- SQL Queries
+
+Leah Jamison
+- Templates
+
+Emily Lederman
+- Presentation
+- Worked on specification

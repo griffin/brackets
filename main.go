@@ -98,6 +98,8 @@ func main() {
 
 	router.GET("/tournament/:selector", e.GetTournamentRoute)
 	router.GET("/tournament", e.GetTournamentsRoute)
+	router.POST("/tournament/:selector/new", e.PostCreateTeamRoute)
+	router.POST("/tournament", e.PostCreateTournamentRoute)
 
 	router.GET("/team/:selector", e.GetTeamRoute)
 

@@ -64,6 +64,12 @@
 
 
     <div id="container">
+        {{if .login}}
+        <form action="/tournament" method="POST" >
+            <p>Name: <input type="text" class="form-control" name="new_tour" required></p>
+            <input type="submit" class="btn btn-primary" value="Create">
+        </form>
+        {{end}}
         {{if .tournaments}}
         <table class="table table-striped">
             <thead>

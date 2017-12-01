@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	createTournament = "INSERT INTO tournaments (selector, name) VALUES ($1, $2)"
+	createTournament = "INSERT INTO tournaments (selector, name) VALUES ($1, $2) RETURNING id"
 	getTournament    = "SELECT id, name FROM tournaments WHERE selector=$1"
 	updateTournament = "UPDATE tournaments SET name=$1 WHERE id=$2"
 	deleteTournament = "DELETE FROM tournaments WHERE id=$1"
@@ -51,15 +51,9 @@ type Organizer struct {
 // CreateTournament creates a new tournament using the struct provided
 // and returns a pointer to a new struct
 func (d *db) CreateTournament(tour Tournament) (*Tournament, error) {
-	selector := d.GenerateSelector(selectorLen)
-	tour.sel = selector
+	tour.sel = d.GenerateSelector(selectorLen)
 
-	tx, err := d.DB.Begin()
-	tx.Exec(createTournament, selector, tour.Name)
-	for _, e := range tour.Organizers {
-		tx.Exec(insertOrganizer, e.ID, tour.ID, e.Rank)
-	}
-	err = tx.Commit()
+	err := d.QueryRow(createTournament, tour.sel, tour.Name).Scan(&tour.ID)
 	if err != nil {
 		d.Logger.Panicln(err)
 		return nil, errors.New("failed to create tournament")
