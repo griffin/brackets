@@ -56,3 +56,4 @@ vN9g3T6D89KG
 - Teams Edit
     - go to teams index page and click on the Edit Team button on the navigation
     bar
+    - add games by using the add game form
