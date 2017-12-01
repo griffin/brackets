@@ -43,14 +43,11 @@ type Game struct {
 
 func (d *db) CreateGame(game Game) (*Game, error) {
 	game.sel = d.GenerateSelector(selectorLen)
-	res, err := d.DB.Exec(createGame, game.sel, game.AwayTeam.ID, game.HomeTeam.ID, game.Time, game.Location)
+	_, err := d.DB.Exec(createGame, game.sel, game.AwayTeam.ID, game.HomeTeam.ID, game.Time, game.Location)
 	if err != nil {
 		d.Logger.Println(err)
 		return nil, errors.New("couldn't create game")
 	}
-
-	id, err := res.LastInsertId()
-	game.ID = uint(id)
 
 	return &game, nil
 }

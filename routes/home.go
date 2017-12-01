@@ -22,6 +22,7 @@ func (e *Env) GetHomeRoute(c *gin.Context) {
 
 	usr, err := e.Db.CheckSession(token)
 	if err != nil {
+		c.SetCookie("user_session", "del", -1, "/", "", false, false)
 		c.HTML(http.StatusOK, "home.html", nil)
 		return
 	}

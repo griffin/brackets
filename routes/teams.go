@@ -1,13 +1,14 @@
 package routes
 
 import (
-	"strings"
 	"net/http"
+	"strings"
 
 	"github.com/ggpd/brackets/env"
 	"github.com/gin-gonic/gin"
 
-	"fmt"	
+	"time"
+	"fmt"
 )
 
 func (e *Env) GetTeamRoute(c *gin.Context) {
@@ -17,6 +18,9 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	team, err := e.Db.GetTeam(c.Param("selector"), true)
@@ -40,255 +44,341 @@ func (e *Env) GetTeamRoute(c *gin.Context) {
 		"login": login,
 		"team":  team,
 		"games": games,
-		"rank": perm,
+		"rank":  perm,
 	})
 }
 
 func (e *Env) GetEditTeamRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
-	
+
 	if err != nil {
 		c.HTML(http.StatusNotFound, "notfound.html", nil)
 		return
 	}
-	
-		login, err := e.Db.CheckSession(token)
-	
-		team, err := e.Db.GetTeam(c.Param("selector"), true)
-		if err != nil {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
-		}
 
-		perm, err := e.Db.GetRank(*team, *login)
-		if perm != env.Manager {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
-		}
-	
-		c.HTML(http.StatusOK, "team_edit.html", gin.H{
-			"login": login,
-			"team":  team,
-		})
+	login, err := e.Db.CheckSession(token)
+	if err != nil {
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	team, err := e.Db.GetTeam(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	perm, err := e.Db.GetRank(*team, *login)
+	if perm != env.Manager {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	c.HTML(http.StatusOK, "team_edit.html", gin.H{
+		"login": login,
+		"team":  team,
+	})
 }
 
 func (e *Env) GetDeletePlayerRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
-	
-		var login *env.User
-	
-		if err == nil {
-			login, err = e.Db.CheckSession(token)
-		}
-	
-		team, err := e.Db.GetTeam(c.Param("selector"), true)
+
+	var login *env.User
+
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
 		if err != nil {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
 		}
+	}
 
-		perm, err := e.Db.GetRank(*team, *login)
-		if perm != env.Manager {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
+	team, err := e.Db.GetTeam(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	perm, err := e.Db.GetRank(*team, *login)
+	if perm != env.Manager {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	delSt := c.Param("user")
+
+	var del *env.Player
+	index := 0
+	for _, p := range team.Players {
+		if strings.Compare(delSt, p.Selector.String()) == 0 {
+			del = p
+			break
 		}
+		index++
+	}
 
+	team.Players[len(team.Players)-1], team.Players[index] = team.Players[index], team.Players[len(team.Players)-1]
+	team.Players = team.Players[:len(team.Players)-1]
 
-		delSt := c.Param("user")
+	team, err = e.Db.DeletePlayer(*team, *del)
+	if err != nil {
+		e.Log.Println(err)
+	}
 
-		var del *env.Player
-		index := 0
-		for _, p := range team.Players {
-			if strings.Compare(delSt, p.Selector.String()) == 0 {
-				del = p
-				break
-			}
-			index++
-		}
-
-		team.Players[len(team.Players)-1], team.Players[index] = team.Players[index], team.Players[len(team.Players)-1]
-		team.Players = team.Players[:len(team.Players)-1]
-
-		team, err = e.Db.DeletePlayer(*team, *del)
-		if err != nil {
-			e.Log.Println(err)
-		}
-
-		c.Redirect(http.StatusFound, fmt.Sprintf("/team/%s/edit", team.Selector.String()))
-		c.HTML(http.StatusOK, "team_edit.html", gin.H{
-			"login": login,
-			"team":  team,
-		})
+	c.Redirect(http.StatusFound, fmt.Sprintf("/team/%s/edit", team.Selector.String()))
+	c.HTML(http.StatusOK, "team_edit.html", gin.H{
+		"login": login,
+		"team":  team,
+	})
 }
 
 func (e *Env) PostEditTeamRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
-	
-		var login *env.User
-	
-		if err == nil {
-			login, err = e.Db.CheckSession(token)
+
+	var login *env.User
+
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+			c.Redirect(http.StatusFound, "/")
 		}
-	
-		team, err := e.Db.GetTeam(c.Param("selector"), true)
+	}
+
+	team, err := e.Db.GetTeam(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	perm, err := e.Db.GetRank(*team, *login)
+	if perm != env.Manager {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	teamName, er1 := c.GetPostForm("name")
+	if !validField(teamName, er1) {
+		//Redo
+	}
+
+	if strings.Compare(teamName, team.Name) != 0 {
+		team.Name = teamName
+		err = e.Db.UpdateTeam(*team)
 		if err != nil {
 			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
 		}
+	}
 
-		perm, err := e.Db.GetRank(*team, *login)
-		if perm != env.Manager {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
-		}
-		
+	list := team.Players
+	for _, pl := range list {
+		rank, er2 := c.GetPostForm(fmt.Sprintf("%s:%s", pl.Selector.String(), "rank"))
 
-		teamName, er1 := c.GetPostForm("name")
-		if !validField(teamName, er1) {
-			//Redo
-		}
-
-		if strings.Compare(teamName, team.Name) != 0 {
-			team.Name = teamName
-			err = e.Db.UpdateTeam(*team)
-			if err != nil {
-				e.Log.Println(err)
-			}
-		}
-
-		list := team.Players
-		for _, pl := range list {
-			rank, er2 := c.GetPostForm(fmt.Sprintf("%s:%s", pl.Selector.String(), "rank"))
-
-			if !validField(rank, er2){
-				//ERROR
-			}
-
-			r := env.ToRank(rank)
-
-			if r == pl.Rank {
-				continue
-			}
-
-			pl.Rank = r
-			team, err = e.Db.UpdatePlayer(*team, *pl)
-			if err != nil {
-				e.Log.Println(err)
-			}
-
-		}
-	
-		c.HTML(http.StatusOK, "team_edit.html", gin.H{
-			"login": login,
-			"team":  team,
-		})
-}
-
-
-func (e *Env) PostAddPlayerRoute(c *gin.Context) {
-	token, err := c.Cookie("user_session")
-	
-		var login *env.User
-	
-		if err == nil {
-			login, err = e.Db.CheckSession(token)
-		}
-	
-		team, err := e.Db.GetTeam(c.Param("selector"), true)
-		if err != nil {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
-		}
-
-		perm, err := e.Db.GetRank(*team, *login)
-		if perm != env.Manager {
-			e.Log.Println(err)
-			c.HTML(http.StatusNotFound, "notfound.html", nil)
-			return
-		}
-
-		uString, er1 := c.GetPostForm("new_sel")
-		rank, er2 := c.GetPostForm("new_rank")
-		if !validField(uString, er1) || !validField(rank, er2) {
-			return
-		}
-
-		usr, err := e.Db.GetUser(uString)
-		if err != nil {
-			return
+		if !validField(rank, er2) {
+			//ERROR
 		}
 
 		r := env.ToRank(rank)
 
-		pl := env.Player {
-			User: *usr,
-			Rank: r,
+		if r == pl.Rank {
+			continue
 		}
 
+		pl.Rank = r
+		team, err = e.Db.UpdatePlayer(*team, *pl)
+		if err != nil {
+			e.Log.Println(err)
+		}
 
-		team, err = e.Db.AddPlayer(*team, pl)
-
-		c.Redirect(http.StatusFound, fmt.Sprintf("/team/%s/edit", team.Selector.String()))
-		c.HTML(http.StatusOK, "team_edit.html", gin.H{
-			"login": login,
-			"team":  team,
-		})	
 	}
 
-	func (e *Env) PostCreateTeamRoute(c *gin.Context){
-		token, err := c.Cookie("user_session")
-		
-			var login *env.User
-		
-			if err == nil {
-				login, err = e.Db.CheckSession(token)
-			}
-		
-			tour, err := e.Db.GetTournament(c.Param("selector"), true)
-			if err != nil {
-				e.Log.Println(err)
-				c.HTML(http.StatusNotFound, "notfound.html", nil)
-				return
-			}
+	c.HTML(http.StatusOK, "team_edit.html", gin.H{
+		"login": login,
+		"team":  team,
+	})
+}
 
-			teamName, er1 := c.GetPostForm("new_team")
-			if !validField(teamName, er1)  {
-				return
-			}
+func (e *Env) PostAddPlayerRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
 
-			team := env.Team {
-				TournamentID: tour.ID,
-				Name: teamName,
-			}
+	var login *env.User
 
-			t, err := e.Db.CreateTeam(team)
-			if err != nil {
-				e.Log.Println(err)
-			}
-
-			pl := env.Player{
-				User: *login,
-				Rank: env.Manager,
-			}
-
-			t, err = e.Db.AddPlayer(*t, pl)
-			if err != nil {
-				e.Log.Println(err)
-			}
-
-			e.Log.Println(t.Selector.String())
-			tour.Teams = append(tour.Teams, t)
-
-			c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%s", tour.Selector.String()))
-			c.HTML(http.StatusOK, "tournament_index.html", gin.H{
-				"login": login,
-				"tour": tour,
-			})
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+			c.Redirect(http.StatusFound, "/")
+		}
 	}
+
+	team, err := e.Db.GetTeam(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	perm, err := e.Db.GetRank(*team, *login)
+	if perm != env.Manager {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	uString, er1 := c.GetPostForm("new_sel")
+	rank, er2 := c.GetPostForm("new_rank")
+	if !validField(uString, er1) || !validField(rank, er2) {
+		return
+	}
+
+	usr, err := e.Db.GetUser(uString)
+	if err != nil {
+		return
+	}
+
+	r := env.ToRank(rank)
+
+	pl := env.Player{
+		User: *usr,
+		Rank: r,
+	}
+
+	team, err = e.Db.AddPlayer(*team, pl)
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/team/%s/edit", team.Selector.String()))
+	c.HTML(http.StatusOK, "team_edit.html", gin.H{
+		"login": login,
+		"team":  team,
+	})
+}
+
+func (e *Env) PostCreateTeamRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+
+	var login *env.User
+
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+			c.Redirect(http.StatusFound, "/")
+			return
+		}
+	}
+
+	tour, err := e.Db.GetTournament(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	teamName, er1 := c.GetPostForm("new_team")
+	if !validField(teamName, er1) {
+		return
+	}
+
+	team := env.Team{
+		TournamentID: tour.ID,
+		Name:         teamName,
+	}
+
+	t, err := e.Db.CreateTeam(team)
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+	pl := env.Player{
+		User: *login,
+		Rank: env.Manager,
+	}
+
+	t, err = e.Db.AddPlayer(*t, pl)
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+	e.Log.Println(t.Selector.String())
+	tour.Teams = append(tour.Teams, t)
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/tournament/%s", tour.Selector.String()))
+	c.HTML(http.StatusOK, "tournament_index.html", gin.H{
+		"login": login,
+		"tour":  tour,
+	})
+}
+
+func (e *Env) PostCreateGameRoute(c *gin.Context) {
+	token, err := c.Cookie("user_session")
+
+	var login *env.User
+
+	if err == nil {
+		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+			c.Redirect(http.StatusFound, "/")
+		}
+	}
+
+	team, err := e.Db.GetTeam(c.Param("selector"), true)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	perm, err := e.Db.GetRank(*team, *login)
+	if perm != env.Manager {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+	locSt, er1 := c.GetPostForm("g_loc")
+	sel, er2 := c.GetPostForm("g_against")
+	timeSt, er3 := c.GetPostForm("g_time")
+	date, er4 := c.GetPostForm("g_date")
+	if !validField(locSt, er1) || !validField(sel, er2) ||
+	!validField(timeSt, er3) || !validField(date, er4) {
+		return
+	}
+
+	t, err := time.Parse("15:04 2006-01-02", fmt.Sprintf("%s %s", timeSt, date))
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+	ag, err := e.Db.GetTeam(sel, false)
+	if err != nil {
+		e.Log.Println(err)
+		c.HTML(http.StatusNotFound, "notfound.html", nil)
+		return
+	}
+
+
+
+	g := env.Game{
+		HomeTeam: team,
+		AwayTeam: ag,
+		Location: locSt,
+		Time: t,
+	}
+
+	_, err = e.Db.CreateGame(g)
+	if err != nil {
+		e.Log.Println(err)
+	}
+
+	c.Redirect(http.StatusFound, fmt.Sprintf("/team/%s/edit", team.Selector.String()))
+	c.HTML(http.StatusOK, "team_edit.html", gin.H{
+		"login": login,
+		"team":  team,
+	})
+
+}

@@ -107,6 +107,7 @@ func main() {
 	router.POST("/team/:selector/edit", e.PostEditTeamRoute)
 	router.POST("/team/:selector/add", e.PostAddPlayerRoute)
 	router.GET("/team/:selector/edit/:user/delete", e.GetDeletePlayerRoute)
+	router.POST("/team/:selector/game", e.PostCreateGameRoute)
 
 	router.GET("/user/:selector", e.GetUserRoute)
 	router.GET("/user", e.GetUsersRoute)

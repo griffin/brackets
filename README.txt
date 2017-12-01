@@ -44,8 +44,10 @@ vN9g3T6D89KG
 ## Tournaments
 - Pagenated tournaments page
     - on navigation bar
+    - lets you create a new tournament by entering name into box while logged in
 - Tournament index page lists organizers and current teams
     - click on any tournament after visiting tournaments page
+    - create a new team by putting the name in the box while logged in
 
 ## Teams
 - Teams index  

@@ -118,6 +118,35 @@
             </table>
 
             <input type="submit" form="team" class="btn btn-primary" value="Submit">
+
+            <br>
+            <form action="/team/{{.team.Selector.String}}/game" method="POST">
+                <table id="profile">
+                <tr>
+                    <td>
+                        <input class="form-control" type="text" name="g_against" placeholder="Against Selector" required> 
+                    </td>
+                    <td>
+                        <input class="form-control" type="time" name="g_time" value="" required> 
+                    </td>
+                    <td>
+                        <input class="form-control" type="date" name="g_date" value="" required> 
+                    </td>
+                    <td>
+                        <input class="form-control" type="text" name="g_loc" value="Location" required> 
+                    </td>
+                    <td>
+                        <button type="submit" class="icon-button">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                    </td>
+
+                </tr>
+            </table>
+            </form>
+            </table>
+
+
         </div>
         <div id="right">
             <h1> </h1>

@@ -15,6 +15,9 @@ func (e *Env) GetTournamentRoute(c *gin.Context) {
 	
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	tour, err := e.Db.GetTournament(c.Param("selector"), true)
@@ -37,6 +40,9 @@ func (e *Env) GetTournamentsRoute(c *gin.Context) {
 	
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	pageStr := c.DefaultQuery("page", "0")
@@ -72,6 +78,9 @@ func (e *Env) PostCreateTournamentRoute(c *gin.Context){
 	
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	tour := env.Tournament{

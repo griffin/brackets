@@ -17,6 +17,9 @@ func (e *Env) GetUserRoute(c *gin.Context) {
 
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	usr, err := e.Db.GetUser(c.Param("selector"))
@@ -38,6 +41,9 @@ func (e *Env) GetUsersRoute(c *gin.Context) {
 
 	if err == nil {
 		login, err = e.Db.CheckSession(token)
+		if err != nil {
+			c.SetCookie("user_session", "del", -1, "/", "", false, false)
+		}
 	}
 
 	pageStr := c.DefaultQuery("page", "0")
@@ -70,11 +76,15 @@ func (e *Env) GetSettingsRoute(c *gin.Context) {
 	token, err := c.Cookie("user_session")
 	if err != nil {
 		c.Redirect(http.StatusFound, "/")
+		return
 	}
 
 	usr, err := e.Db.CheckSession(token)
 	if err != nil {
+
+		c.SetCookie("user_session", "del", -1, "/", "", false, false)
 		c.Redirect(http.StatusFound, "/")
+		return
 	}
 
 	c.HTML(http.StatusOK, "user_edit.html", gin.H{
@@ -105,7 +115,9 @@ func (e *Env) PostSettingsRoute(c *gin.Context) {
 
 	usr, err := e.Db.CheckSession(token)
 	if err != nil {
+		c.SetCookie("user_session", "del", -1, "/", "", false, false)
 		c.Redirect(http.StatusFound, "/")
+		return
 	}
 
 	first, e1 := c.GetPostForm("first")
